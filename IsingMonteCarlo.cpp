@@ -11,6 +11,8 @@ using namespace std;
 
 int main(){
 
+    double T=1; //temperature
+
     PARAMS param; //read parameter file
     //param.print();
 
@@ -22,7 +24,7 @@ int main(){
     //define the Ising variables +1 or -1: initialize to 1
     vector<int> Spins(cube.N_,1);
 
-    IsingHamiltonian hamil(Spins,cube);
+    IsingHamiltonian hamil(Spins,cube,T);
     hamil.print();
 
     return 0;

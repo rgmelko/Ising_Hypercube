@@ -18,14 +18,14 @@ class IsingHamiltonian
 
         int Bonds_Per_Site; //total number of bonds per site
 
-        int Energy;  //total energy of the system
+        double Energy;  //total energy of the system
 
         //All the 2*D neighbors of a given site
         vector<vector<int> > All_Neighbors; 
         //you will double count if you calculate energy from this directly...
 
-        IsingHamiltonian(vector <int> &, HyperCube & cube); 
-        //double CalcEnergy(vector <int> &);
+        IsingHamiltonian(vector <int> &, HyperCube & cube,double & T); 
+        double CalcEnergy(vector <int> &, double & T);
 
         void print();
 
@@ -33,7 +33,7 @@ class IsingHamiltonian
 };
 
 //constructor
-IsingHamiltonian::IsingHamiltonian(vector <int> & Spins, HyperCube & cube){
+IsingHamiltonian::IsingHamiltonian(vector <int> & Spins, HyperCube & cube, double & T){
 
     L_ = cube.L_;
     D_ = cube.D_;
@@ -55,7 +55,7 @@ IsingHamiltonian::IsingHamiltonian(vector <int> & Spins, HyperCube & cube){
     }//i
 
 
-    //CalcEnergy(Spins);      
+    cout<<CalcEnergy(Spins,T)<<endl;      
 
 
 }//constructor
@@ -77,14 +77,21 @@ void IsingHamiltonian::print(){
 
 
 //loops through to calculate the energy
-//IsingHamiltonian::CalcEnergy(vector<int> & Spins){
-//
-//    for (int i=0; i< N_; i++){
-//
-//
-//    }//i
-//
-//}
+double IsingHamiltonian::CalcEnergy(vector<int> & Spins, double & T){
+
+    Energy = 0.0;
+
+    for (int i=0; i<All_Neighbors.size(); i++){
+        for (int j=0; j<All_Neighbors[i].size(); j++){
+            Energy += -T*Spins[i]*Spins[All_Neighbors[i][j]];
+        }//j
+    }//i
+
+    Energy /= 2.0;
+
+    return Energy/(1.0*N_);
+
+}
 
 
 #endif
