@@ -11,15 +11,15 @@ class PARAMS
     public:
         int nX_;      //linear size of lattice
         int Dim_;      //dimension of lattice
-		int EQL_;     //the number of Monte Carlo steps
-		int MCS_;     //the number of Monte Carlo steps
+        int EQL_;     //the number of Monte Carlo steps
+        int MCS_;     //the number of Monte Carlo steps
         int nBin_;    //number of production bins
         long SEED_;
 
         PARAMS();
         void print();
 
-   
+
 }; //PARAMS
 
 PARAMS::PARAMS(){
@@ -40,12 +40,12 @@ PARAMS::PARAMS(){
 
 void PARAMS::print(){
 
-     cout<<"Linear size "<<nX_<<endl;
-     cout<<"Dimension "<<Dim_<<endl;
-     cout<<"# Equil steps "<<EQL_<<endl;
-     cout<<"# MC steps "<<MCS_<<endl;
-     cout<<"# data bins "<<nBin_<<endl;
-     cout<<"RNG seed "<<SEED_<<endl;
+    cout<<"Linear size "<<nX_<<endl;
+    cout<<"Dimension "<<Dim_<<endl;
+    cout<<"# Equil steps "<<EQL_<<endl;
+    cout<<"# MC steps "<<MCS_<<endl;
+    cout<<"# data bins "<<nBin_<<endl;
+    cout<<"RNG seed "<<SEED_<<endl;
 
 }
 

@@ -16,7 +16,7 @@ class HyperCube
         int D_; //dimension
         int N_; //total number of sites
 
-        //the lattice is a vector of vectors
+        //the lattice is a vector of vectors: no double counting
         vector<vector<int> > Neighbors;
 
         //public functions
