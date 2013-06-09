@@ -19,7 +19,7 @@ class Spins
 
         //public functions
         Spins(int N);
-		void flip(int index);
+        void flip(int index);
         void print();
 
 };
@@ -37,7 +37,7 @@ Spins::Spins(int N){
 //a single-spin flip
 void Spins::flip(int index){
 
-	spin[index] *= -1;
+    spin.at(index) *= -1;
 
 }//flip
 
@@ -45,9 +45,9 @@ void Spins::flip(int index){
 void Spins::print(){
 
     for (int i=0;i<spin.size();i++){
-		cout<<spin[i]<<" ";
+        cout<<spin[i]<<" ";
     }//i
-	cout<<endl;
+    cout<<endl;
 
 }//print
 

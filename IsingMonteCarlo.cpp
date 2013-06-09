@@ -11,7 +11,7 @@ using namespace std;
 
 int main(){
 
-    double T=1; //temperature
+    double T=20; //temperature
 
     PARAMS param; //read parameter file
     //param.print();
@@ -24,11 +24,29 @@ int main(){
     //define the Ising variables +1 or -1: initialize to 1
     Spins sigma(cube.N_);
 
-    IsingHamiltonian hamil(sigma,cube,T);
+    IsingHamiltonian hamil(sigma,cube);
     //hamil.print();
 
-	sigma.flip(0);
-	cout<<hamil.CalcEnergy(sigma,T)<<endl;
+	sigma.print();
+    //sigma.flip(mrand.randInt(cube.N_-1));
+    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+
+	hamil.LocalUpdate(sigma,T,mrand);
+	sigma.print();
+    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+
+	hamil.LocalUpdate(sigma,T,mrand);
+	sigma.print();
+    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+
+	hamil.LocalUpdate(sigma,T,mrand);
+	sigma.print();
+    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+
+	hamil.LocalUpdate(sigma,T,mrand);
+	sigma.print();
+    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+
 
     return 0;
 

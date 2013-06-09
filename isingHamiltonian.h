@@ -5,6 +5,7 @@
 // a class calculate the energy of an Ising model
 
 #include "spins.h"
+#include "MersenneTwister.h"
 #include <vector>
 #include <iostream>
 
@@ -25,8 +26,9 @@ class IsingHamiltonian
         vector<vector<int> > All_Neighbors; 
         //you will double count if you calculate energy from this directly...
 
-        IsingHamiltonian(Spins & sigma, HyperCube & cube,double & T); 
-        double CalcEnergy(Spins & sigma, double & T);
+        IsingHamiltonian(Spins & sigma, HyperCube & cube); 
+        double CalcEnergy(Spins & sigma);
+        void LocalUpdate(Spins & sigma, double & T, MTRand & ran);
 
         void print();
 
@@ -34,7 +36,7 @@ class IsingHamiltonian
 };
 
 //constructor
-IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube, double & T){
+IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
 
     L_ = cube.L_;
     D_ = cube.D_;
@@ -56,7 +58,7 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube, double & T){
     }//i
 
 
-    cout<<CalcEnergy(sigma,T)<<endl;      
+    cout<<CalcEnergy(sigma)/(1.0*N_)<<endl;      
 
 
 }//constructor
@@ -78,21 +80,61 @@ void IsingHamiltonian::print(){
 
 
 //loops through to calculate the energy
-double IsingHamiltonian::CalcEnergy(Spins & sigma, double & T){
+double IsingHamiltonian::CalcEnergy(Spins & sigma){
 
     Energy = 0.0;
 
     for (int i=0; i<All_Neighbors.size(); i++){
         for (int j=0; j<All_Neighbors[i].size(); j++){
-            Energy += -T*sigma.spin[i]*sigma.spin[All_Neighbors[i][j]];
+            Energy += -sigma.spin[i]*sigma.spin[All_Neighbors[i][j]];
         }//j
     }//i
 
     Energy /= 2.0;
 
-    return Energy/(1.0*N_);
+    return Energy;
 
 }
 
+//Calculates a number of single-spin flips
+void IsingHamiltonian::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
+
+	int site;  //random site for update
+	double Ediff;
+	double m_rand; //metropolis random number
+
+    site = ran.randInt(N_-1);
+	cout<<"site is "<<site<<endl;
+
+	for (int i=0; i<All_Neighbors[site].size(); i++)
+		Ediff += -sigma.spin[site] * sigma.spin[All_Neighbors[site][i]];
+    
+	Ediff *= -2;
+
+	cout<<Energy<<" "<<Ediff<<endl;
+
+    //Metropolis algorithm
+	if (Ediff < 0){
+		sigma.flip(site);
+		Energy += Ediff;
+	}
+	else{
+		m_rand = ran.rand();   // real number in [0,1]
+	    cout<<"exponential "<<exp(-Ediff/T)<<" "<<m_rand<<endl;
+		if ( exp(-Ediff/T) > m_rand){
+			sigma.flip(site);
+			Energy += Ediff;
+		}
+		// otherwise reject
+		else cout<<"reject: ";
+	}
+
+	cout<<"Emod "<<Energy<<endl;
+
+}//LocalUpdate
+
+
 
 #endif
+
+
