@@ -4,6 +4,7 @@
 // isingHamiltonian.h
 // a class calculate the energy of an Ising model
 
+#include "spins.h"
 #include <vector>
 #include <iostream>
 
@@ -24,8 +25,8 @@ class IsingHamiltonian
         vector<vector<int> > All_Neighbors; 
         //you will double count if you calculate energy from this directly...
 
-        IsingHamiltonian(vector <int> &, HyperCube & cube,double & T); 
-        double CalcEnergy(vector <int> &, double & T);
+        IsingHamiltonian(Spins & sigma, HyperCube & cube,double & T); 
+        double CalcEnergy(Spins & sigma, double & T);
 
         void print();
 
@@ -33,7 +34,7 @@ class IsingHamiltonian
 };
 
 //constructor
-IsingHamiltonian::IsingHamiltonian(vector <int> & Spins, HyperCube & cube, double & T){
+IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube, double & T){
 
     L_ = cube.L_;
     D_ = cube.D_;
@@ -55,7 +56,7 @@ IsingHamiltonian::IsingHamiltonian(vector <int> & Spins, HyperCube & cube, doubl
     }//i
 
 
-    cout<<CalcEnergy(Spins,T)<<endl;      
+    cout<<CalcEnergy(sigma,T)<<endl;      
 
 
 }//constructor
@@ -77,13 +78,13 @@ void IsingHamiltonian::print(){
 
 
 //loops through to calculate the energy
-double IsingHamiltonian::CalcEnergy(vector<int> & Spins, double & T){
+double IsingHamiltonian::CalcEnergy(Spins & sigma, double & T){
 
     Energy = 0.0;
 
     for (int i=0; i<All_Neighbors.size(); i++){
         for (int j=0; j<All_Neighbors[i].size(); j++){
-            Energy += -T*Spins[i]*Spins[All_Neighbors[i][j]];
+            Energy += -T*sigma.spin[i]*sigma.spin[All_Neighbors[i][j]];
         }//j
     }//i
 

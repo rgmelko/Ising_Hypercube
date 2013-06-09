@@ -22,10 +22,13 @@ int main(){
     //cube.print();
 
     //define the Ising variables +1 or -1: initialize to 1
-    vector<int> Spins(cube.N_,1);
+    Spins sigma(cube.N_);
 
-    IsingHamiltonian hamil(Spins,cube,T);
-    hamil.print();
+    IsingHamiltonian hamil(sigma,cube,T);
+    //hamil.print();
+
+	sigma.flip(0);
+	cout<<hamil.CalcEnergy(sigma,T)<<endl;
 
     return 0;
 
