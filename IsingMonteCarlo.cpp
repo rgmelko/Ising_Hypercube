@@ -11,7 +11,7 @@ using namespace std;
 
 int main(){
 
-    double T=20; //temperature
+    double T; //temperature
 
     PARAMS param; //read parameter file
     //param.print();
@@ -27,26 +27,20 @@ int main(){
     IsingHamiltonian hamil(sigma,cube);
     //hamil.print();
 
-	sigma.print();
+    sigma.print();
     //sigma.flip(mrand.randInt(cube.N_-1));
     cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
 
-	hamil.LocalUpdate(sigma,T,mrand);
-	sigma.print();
-    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
-
-	hamil.LocalUpdate(sigma,T,mrand);
-	sigma.print();
-    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
-
-	hamil.LocalUpdate(sigma,T,mrand);
-	sigma.print();
-    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
-
-	hamil.LocalUpdate(sigma,T,mrand);
-	sigma.print();
-    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
-
+    double EE;
+    for (T = 10; T>0.2; T -= 0.2){
+        for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
+        EE = 0.0;
+        for (int i=0; i<param.MCS_; i++){ 
+            hamil.LocalUpdate(sigma,T,mrand);
+            EE += hamil.Energy;
+        }
+        cout<<T<<" "<<EE/(1.0*param.MCS_*cube.N_)<<endl;
+    }
 
     return 0;
 

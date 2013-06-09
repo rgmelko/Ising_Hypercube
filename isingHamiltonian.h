@@ -90,7 +90,7 @@ double IsingHamiltonian::CalcEnergy(Spins & sigma){
         }//j
     }//i
 
-    Energy /= 2.0;
+    Energy /= 2.0; //double counting
 
     return Energy;
 
@@ -99,38 +99,41 @@ double IsingHamiltonian::CalcEnergy(Spins & sigma){
 //Calculates a number of single-spin flips
 void IsingHamiltonian::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
 
-	int site;  //random site for update
-	double Ediff;
-	double m_rand; //metropolis random number
+    int site;  //random site for update
+    double Ediff;
+    double m_rand; //metropolis random number
 
-    site = ran.randInt(N_-1);
-	cout<<"site is "<<site<<endl;
+    for (int j=0; j<N_; j++){ //peform N random single spin flips
 
-	for (int i=0; i<All_Neighbors[site].size(); i++)
-		Ediff += -sigma.spin[site] * sigma.spin[All_Neighbors[site][i]];
-    
-	Ediff *= -2;
+        site = ran.randInt(N_-1);
+        //cout<<"site is "<<site<<endl;
 
-	cout<<Energy<<" "<<Ediff<<endl;
+        Ediff = 0;
+        for (int i=0; i<All_Neighbors[site].size(); i++)
+            Ediff += -sigma.spin[site] * sigma.spin[All_Neighbors[site][i]];
+        Ediff *= -2;
 
-    //Metropolis algorithm
-	if (Ediff < 0){
-		sigma.flip(site);
-		Energy += Ediff;
-	}
-	else{
-		m_rand = ran.rand();   // real number in [0,1]
-	    cout<<"exponential "<<exp(-Ediff/T)<<" "<<m_rand<<endl;
-		if ( exp(-Ediff/T) > m_rand){
-			sigma.flip(site);
-			Energy += Ediff;
-		}
-		// otherwise reject
-		else cout<<"reject: ";
-	}
+        //cout<<Energy<<" "<<Ediff<<endl;
 
-	cout<<"Emod "<<Energy<<endl;
+        //Metropolis algorithm
+        if (Ediff < 0){
+            sigma.flip(site);
+            Energy += Ediff;
+        }
+        else{
+            m_rand = ran.rand();   // real number in [0,1]
+            //cout<<"exponential "<<exp(-Ediff/T)<<" "<<m_rand<<endl;
+            if ( exp(-Ediff/T) > m_rand){
+                sigma.flip(site);
+                Energy += Ediff;
+            }
+            // otherwise reject
+            //else cout<<"reject: ";
+        }
 
+    }//j
+
+    //cout<<"Emod "<<Energy<<endl;
 }//LocalUpdate
 
 
