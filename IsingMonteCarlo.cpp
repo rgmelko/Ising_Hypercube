@@ -8,6 +8,7 @@ using namespace std;
 #include "MersenneTwister.h"
 #include "simparam.h"
 #include "isingHamiltonian.h"
+#include "measure.h"
 
 int main(){
 
@@ -27,19 +28,19 @@ int main(){
     IsingHamiltonian hamil(sigma,cube);
     //hamil.print();
 
-    sigma.print();
+    //sigma.print();
     //sigma.flip(mrand.randInt(cube.N_-1));
-    cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+    //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
 
-    double EE;
-    for (T = 10; T>0.2; T -= 0.2){
+    Measure accum(cube.N_,param);
+    for (T = 20; T>0.4; T -= 0.4){
         for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
-        EE = 0.0;
+        accum.zero();
         for (int i=0; i<param.MCS_; i++){ 
             hamil.LocalUpdate(sigma,T,mrand);
-            EE += hamil.Energy;
+            accum.record(hamil.Energy,sigma);
         }
-        cout<<T<<" "<<EE/(1.0*param.MCS_*cube.N_)<<endl;
+        accum.output(T);
     }
 
     return 0;
