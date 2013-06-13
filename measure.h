@@ -62,6 +62,8 @@ void Measure::output(const double & T){
 
     cfout<<T<<" ";
     cfout<<TOT_energy/(1.0*MCS * Nspin)<<" ";
+	double Cv = TOT_energy2/(1.0*MCS) - TOT_energy*TOT_energy/(1.0*MCS*MCS); 
+    cfout<<Cv/(T*T*1.0*Nspin)<<" ";
     cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<"\n";
 
 	cfout.close();
