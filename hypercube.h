@@ -60,7 +60,6 @@ HyperCube::HyperCube(int L, int D){
     temp.clear();
 	temp.assign(D_,0);  //D integers with value 0
 
-    int dim;
 	for (int i=0;i<N_;i++){
 		Coordinates.push_back(temp);
 
@@ -102,7 +101,7 @@ void HyperCube::print(){
 
     cout<<"Coordinates:"<<endl;
     for (int i=0;i<Coordinates.size();i++){
-        cout<<i<<" ";
+        //cout<<i<<" ";
         for (int j=0;j<Coordinates[i].size();j++){
             //cout<<j<<" ";
             cout<<Coordinates[i][j]<<" ";
