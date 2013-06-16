@@ -18,6 +18,7 @@ class HyperCube
 
         //the lattice is a vector of vectors: no double counting
         vector<vector<int> > Neighbors;
+        vector<vector<int> > Coordinates;
 
         //public functions
         HyperCube(int L, int D);
@@ -37,7 +38,6 @@ HyperCube::HyperCube(int L, int D){
     N_ = myPow(L_,D_);
 
     //build the nearest-neighbor connections
-
     vector<int> temp;  //the "inner" vector
     int pair; //the bond pair index
     for (int i=0;i<N_;i++){
@@ -56,18 +56,56 @@ HyperCube::HyperCube(int L, int D){
         Neighbors.push_back(temp);
     }//i
 
-}
+	//build the (x,y,z,...) coordinates of each lattice site
+    temp.clear();
+	temp.assign(D_,0);  //D integers with value 0
+
+    int dim;
+	for (int i=0;i<N_;i++){
+		Coordinates.push_back(temp);
+
+		if ( (temp[0]+1) % L_ == 0){ //end of x-row
+
+			temp[0] = 0; //reset
+
+			for (int j=1;j<D_;j++){
+				if ( (temp[j]+1) % L_ == 0)
+					temp[j] = 0; //reset
+				else{
+					temp[j]++;
+					break;
+				}
+			}//j
+		}//if
+		else
+			temp[0]++;
+	}
+
+
+}//constructor
 
 //a print function
 void HyperCube::print(){
 
+    cout<<"L D N \n";
     cout<<L_<<" "<<D_<<" "<<N_<<endl;
 
+    cout<<"Neighbor list:"<<endl;
     for (int i=0;i<Neighbors.size();i++){
         cout<<i<<" ";
         for (int j=0;j<Neighbors[i].size();j++){
             //cout<<j<<" ";
             cout<<Neighbors[i][j]<<" ";
+        }
+        cout<<endl;
+    }//i
+
+    cout<<"Coordinates:"<<endl;
+    for (int i=0;i<Coordinates.size();i++){
+        cout<<i<<" ";
+        for (int j=0;j<Coordinates[i].size();j++){
+            //cout<<j<<" ";
+            cout<<Coordinates[i][j]<<" ";
         }
         cout<<endl;
     }//i
