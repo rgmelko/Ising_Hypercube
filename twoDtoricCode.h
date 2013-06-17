@@ -1,8 +1,8 @@
-#ifndef ISINGHAMILTONIAN_H
-#define ISINGHAMILTONIAN_H
+#ifndef TWODTORICCODE_H
+#define TWODTORICCODE_H
 
-// isingHamiltonian.h
-// a class calculate the energy of an Ising model
+// 2DtoricCode.h
+// a class to perform a simple metropolis MC on a 2D Sz toric code
 
 #include "spins.h"
 #include "MersenneTwister.h"
@@ -11,35 +11,38 @@
 
 using namespace std;
 
-class IsingHamiltonian 
+class TwoDToricCode
 {
     public:
         int N_;   //number of lattice sites
         int D_;   //Dimension
         int L_;   //Linear size
 
-        int Bonds_Per_Site; //total number of bonds per site
-
         double Energy;  //total energy of the system
 
         //All the 2*D neighbors of a given site
         vector<vector<int> > All_Neighbors; 
-        //you will double count if you calculate energy from this directly...
 
-        IsingHamiltonian(Spins & sigma, HyperCube & cube); 
+        //The sigma-z plaquette
+        vector<vector<int> > Plaquette;
+
+        TwoDToricCode(Spins & sigma, HyperCube & cube); 
         double CalcEnergy(Spins & sigma);
         void LocalUpdate(Spins & sigma, double & T, MTRand & ran);
 
         void print();
 
+    private:
+
+        int Bonds_Per_Site; //total number of bonds per site
 
 };
 
 //constructor
-IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
+TwoDToricCode::TwoDToricCode(Spins & sigma, HyperCube & cube){
 
     L_ = cube.L_;
-    D_ = cube.D_;
+    D_ = 2;
     N_ = cube.N_;
 
     Bonds_Per_Site = 2*D_;  //this will double count the total number of bonds  
@@ -57,15 +60,27 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
         }//j
     }//i
 
+    //use it to built the sigma-z plaquettes
+    vector <int> temp;
+    temp.assign(4,0);  //assign 4 zeros to this vector
+    for (int i=0; i<N_; i++){
+        temp[0] = i;
+        temp[1] = All_Neighbors[i][0];
+        temp[2] = All_Neighbors[i][1];
+        temp[3] = All_Neighbors[temp[1]][1];
+        Plaquette.push_back(temp);
+    }//i
 
-    cout<<CalcEnergy(sigma)/(1.0*N_)<<endl;      
+
+    cout<<CalcEnergy(sigma)<<endl;      
+    //cout<<CalcEnergy(sigma)/(1.0*N_)<<endl;      
 
 
 }//constructor
 
 
 //print
-void IsingHamiltonian::print(){
+void TwoDToricCode::print(){
 
     cout<<L_<<" "<<D_<<" "<<N_<<endl;
 
@@ -76,31 +91,36 @@ void IsingHamiltonian::print(){
         cout<<endl;
     }//i
 
+    cout<<"Plaquette \n";
+    for (int i=0; i<Plaquette.size(); i++){
+        cout<<i<<" ";
+        for (int j=0; j<4; j++)
+            cout<<Plaquette[i][j]<<" ";
+        cout<<endl;
+    }//i
+
 }//print
 
 
 //loops through to calculate the energy
-double IsingHamiltonian::CalcEnergy(Spins & sigma){
+double TwoDToricCode::CalcEnergy(Spins & sigma){
 
-    Energy = 0.0;
+    double eTemp = 0.0;
 
-    for (int i=0; i<All_Neighbors.size(); i++){
-        for (int j=0; j<All_Neighbors[i].size(); j++){
-            Energy += -sigma.spin[i]*sigma.spin[All_Neighbors[i][j]];
-        }//j
+    for (int i=0; i<Plaquette.size(); i++){
+        eTemp -=  sigma.spin[Plaquette[i][0]]*sigma.spin[Plaquette[i][1]]
+                  *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
     }//i
 
-    Energy /= 2.0; //double counting
-
-    return Energy;
+    return eTemp;
 
 }
 
 //Calculates a number of single-spin flips
-void IsingHamiltonian::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
+void TwoDToricCode::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
 
     int site;  //random site for update
-    double Ediff;
+    double Eold, Enew, Ediff;
     double m_rand; //metropolis random number
 
     for (int j=0; j<N_; j++){ //peform N random single spin flips
@@ -108,27 +128,27 @@ void IsingHamiltonian::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
         site = ran.randInt(N_-1);
         //cout<<"site is "<<site<<endl;
 
-        Ediff = 0;
-        for (int i=0; i<All_Neighbors[site].size(); i++)
-            Ediff += -sigma.spin[site] * sigma.spin[All_Neighbors[site][i]];
-        Ediff *= -2;
+        sigma.flip(site);  //trial flip
+        Eold = Energy;
+        Enew = CalcEnergy(sigma);
+        Ediff = Enew - Eold;
 
         //cout<<Energy<<" "<<Ediff<<endl;
 
         //Metropolis algorithm
         if (Ediff < 0){
-            sigma.flip(site);
-            Energy += Ediff;
+            Energy = Enew;
         }
         else{
             m_rand = ran.rand();   // real number in [0,1]
             //cout<<"exponential "<<exp(-Ediff/T)<<" "<<m_rand<<endl;
             if ( exp(-Ediff/T) > m_rand){
-                sigma.flip(site);
-                Energy += Ediff;
+                Energy = Enew;
             }
-            // otherwise reject
-            //else cout<<"reject: ";
+            else{ // otherwise reject
+                sigma.flip(site);
+                Energy = Eold; //redundant
+            }
         }
 
     }//j

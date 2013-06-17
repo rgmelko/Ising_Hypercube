@@ -7,7 +7,7 @@ using namespace std;
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-#include "isingHamiltonian.h"
+#include "twoDtoricCode.h"
 #include "measure.h"
 
 int main(){
@@ -25,15 +25,17 @@ int main(){
     //define the Ising variables +1 or -1: initialize to 1
     Spins sigma(cube.N_);
 
-    IsingHamiltonian hamil(sigma,cube);
+    //IsingHamiltonian hamil(sigma,cube);
+    TwoDToricCode hamil(sigma,cube);
     //hamil.print();
 
     //sigma.print();
     //sigma.flip(mrand.randInt(cube.N_-1));
     //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+    //sigma.print();
 
     Measure accum(cube.N_,param);
-    for (T = 20; T>0.4; T -= 0.4){
+    for (T = 4; T>0.1; T -= 0.1){
         for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
         accum.zero();
         for (int i=0; i<param.MCS_; i++){ 
@@ -42,6 +44,8 @@ int main(){
         }
         accum.output(T);
     }
+
+    sigma.print();
 
     return 0;
 

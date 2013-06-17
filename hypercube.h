@@ -56,29 +56,29 @@ HyperCube::HyperCube(int L, int D){
         Neighbors.push_back(temp);
     }//i
 
-	//build the (x,y,z,...) coordinates of each lattice site
+    //build the (x,y,z,...) coordinates of each lattice site
     temp.clear();
-	temp.assign(D_,0);  //D integers with value 0
+    temp.assign(D_,0);  //D integers with value 0
 
-	for (int i=0;i<N_;i++){
-		Coordinates.push_back(temp);
+    for (int i=0;i<N_;i++){
+        Coordinates.push_back(temp);
 
-		if ( (temp[0]+1) % L_ == 0){ //end of x-row
+        if ( (temp[0]+1) % L_ == 0){ //end of x-row
 
-			temp[0] = 0; //reset
+            temp[0] = 0; //reset
 
-			for (int j=1;j<D_;j++){
-				if ( (temp[j]+1) % L_ == 0)
-					temp[j] = 0; //reset
-				else{
-					temp[j]++;
-					break;
-				}
-			}//j
-		}//if
-		else
-			temp[0]++;
-	}
+            for (int j=1;j<D_;j++){
+                if ( (temp[j]+1) % L_ == 0)
+                    temp[j] = 0; //reset
+                else{
+                    temp[j]++;
+                    break;
+                }
+            }//j
+        }//if
+        else
+            temp[0]++;
+    }
 
 
 }//constructor
