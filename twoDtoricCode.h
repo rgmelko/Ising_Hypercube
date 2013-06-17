@@ -63,12 +63,19 @@ TwoDToricCode::TwoDToricCode(Spins & sigma, HyperCube & cube){
     //use it to built the sigma-z plaquettes
     vector <int> temp;
     temp.assign(4,0);  //assign 4 zeros to this vector
+	int x,y;
     for (int i=0; i<N_; i++){
-        temp[0] = i;
-        temp[1] = All_Neighbors[i][0];
-        temp[2] = All_Neighbors[i][1];
-        temp[3] = All_Neighbors[temp[1]][1];
-        Plaquette.push_back(temp);
+		x = i%L_;
+		y = i/L_;
+
+        //Make the plaquette operators in a checkerboard pattern 
+		if ( (y%2 == 0 && x%2 == 0) || (y%2 == 1 && x%2 == 1)) {
+			temp[0] = i;
+			temp[1] = All_Neighbors[i][0];
+			temp[2] = All_Neighbors[i][1];
+			temp[3] = All_Neighbors[temp[1]][1];
+			Plaquette.push_back(temp);
+		}
     }//i
 
 
