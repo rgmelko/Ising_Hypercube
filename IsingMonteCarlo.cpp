@@ -27,16 +27,14 @@ int main(){
 	Spins sigma; //Assign size of spins in Hamiltonian
 
 	ThreeD12Code hamil(sigma,cube);
-	hamil.print();
-
-	return 1;
+	//hamil.print();
 
     //sigma.print();
     //sigma.flip(mrand.randInt(cube.N_-1));
     //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
     //sigma.print();
 
-    Measure accum(cube.N_,param);
+    Measure accum(hamil.N_,param);
     for (T = 4; T>0.1; T -= 0.1){
         for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
         accum.zero();

@@ -14,7 +14,7 @@ using namespace std;
 class ThreeD12Code
 {
     public:
-        int N_;   //number of lattice sites
+        int N_;   //number of DEGREES OF FREEDOM
         int D_;   //Dimension
         int L_;   //Linear size
 
@@ -114,13 +114,6 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
 void ThreeD12Code::print(){
 
     cout<<L_<<" "<<D_<<" "<<N_<<endl;
-
-//    for (int i=0; i<All_Neighbors.size(); i++){
-//        cout<<i<<" ";
-//        for (int j=0; j<Bonds_Per_Site; j++)
-//            cout<<All_Neighbors[i][j]<<" ";
-//        cout<<endl;
-//    }//i
 
     cout<<"Plaquette \n";
     for (int i=0; i<Plaquette.size(); i++){
