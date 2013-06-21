@@ -94,7 +94,18 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
 			Plaquette.push_back(temp);
     }//i
 
-    //cout<<CalcEnergy(sigma)<<endl;      
+	//DEBUG: check if Plaquette has any errors
+	vector<int> Check(Plaquette.size(),0);
+	//cout<<"Check size : "<<Check.size()<<endl;
+	for (int j=0; j<Check.size(); j++)
+		for (int k=0; k<Plaquette[j].size(); k++)
+			Check[Plaquette[j][k]]++;
+
+	for (int j=0; j<Check.size(); j++)
+		if (Check[j] != 4) cout<<"Plaquette error \n";
+		//cout<<j<<" "<<Check[j]<<endl;
+		
+    cout<<CalcEnergy(sigma)<<endl;      
 
 }//constructor
 
@@ -113,7 +124,7 @@ void ThreeD12Code::print(){
 
     cout<<"Plaquette \n";
     for (int i=0; i<Plaquette.size(); i++){
-        cout<<i<<" ";
+        //cout<<i<<" ";
         for (int j=0; j<4; j++)
             cout<<Plaquette[i][j]<<" ";
         cout<<endl;
