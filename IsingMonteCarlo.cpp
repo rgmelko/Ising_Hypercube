@@ -7,7 +7,7 @@ using namespace std;
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-#include "twoDtoricCode.h"
+#include "threeD_1_2_code.h"
 #include "measure.h"
 
 int main(){
@@ -23,11 +23,13 @@ int main(){
     //cube.print();
 
     //define the Ising variables +1 or -1: initialize to 1
-    Spins sigma(cube.N_);
+    //Spins sigma(cube.N_);
+	Spins sigma; //Assign size of spins in Hamiltonian
 
-    //IsingHamiltonian hamil(sigma,cube);
-    TwoDToricCode hamil(sigma,cube);
-    //hamil.print();
+	ThreeD12Code hamil(sigma,cube);
+	hamil.print();
+
+	return 1;
 
     //sigma.print();
     //sigma.flip(mrand.randInt(cube.N_-1));

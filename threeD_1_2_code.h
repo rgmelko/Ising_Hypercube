@@ -52,26 +52,45 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
     vector <int> temp;
     temp.assign(4,0);  //assign 4 zeros to this vector
 
-    for (int i=0; i<Faces; i++){
+    int Xneigh;
+    int Yneigh;
+    int Zneigh;
+    for (int i=0; i<Faces; i += 3 ){
 		    //XY plane
 			temp[0] = i;
 			temp[1] = i+1;
 			temp[2] = i+4;
 			temp[3] = i+3*L_;
+			//fix boundaries
+			if ((i/3+1)%L_ == 0)
+				temp[2] -= 3*L_;
+			if ( ( (i/3)%(L_*L_) >= (L_*L_) - L_) && ( (i/3)%(L_*L_) < (L_*L_) ) )
+				temp[3] -= 3*L_*L_;
+
 			Plaquette.push_back(temp);
 
 		    //YZ plane
 			temp[0] = i+1;
-			temp[1] = i+3*L_ + 2;
-			temp[2] = i+2;
-			temp[3] = i+L_*L_ + 1;
+			temp[1] = i+2;
+			temp[2] = i+3*L_ + 2;
+			temp[3] = i+3*L_*L_ + 1;
+			if ( ( (i/3)%(L_*L_) >= (L_*L_) - L_) && ( (i/3)%(L_*L_) < (L_*L_) ) )
+				temp[2] -= 3*L_*L_;
+			if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
+				temp[3] -= 3*L_*L_*L_;
+
 			Plaquette.push_back(temp);
 
 		    //XZ plane
 			temp[0] = i;
-			temp[1] = i+5;
-			temp[2] = i+2;
-			temp[3] = i+L_*L_;
+			temp[1] = i+2;
+			temp[2] = i+5;
+			temp[3] = i+3*L_*L_;
+			if ((i/3+1)%L_ == 0)
+				temp[2] -= 3*L_;
+			if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
+				temp[3] -= 3*L_*L_*L_;
+
 			Plaquette.push_back(temp);
     }//i
 

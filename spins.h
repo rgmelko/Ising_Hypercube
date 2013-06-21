@@ -19,14 +19,33 @@ class Spins
 
         //public functions
         Spins(int N);
+        Spins();
+		void resize(int N);
         void flip(int index);
         void print();
 
 };
 
-//constructor
+//constructor 1
+//takes the total number of lattice sites
+Spins::Spins(){
+
+    spin.clear(); 
+
+}
+
+//constructor 2
 //takes the total number of lattice sites
 Spins::Spins(int N){
+
+    N_ = N;
+
+    spin.resize(N_,1); //assign every spin as 1
+
+}
+
+//takes the total number of lattice sites
+void Spins::resize(int N){
 
     N_ = N;
 
