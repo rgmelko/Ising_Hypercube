@@ -21,7 +21,7 @@ class Spins
         //public functions
         Spins(int N);
         Spins();
-		void resize(int N);
+        void resize(int N);
         void flip(int index);
         void print();
         void randomize();
@@ -60,11 +60,11 @@ void Spins::randomize(){
     MTRand irand(129345); //random number 
 
     int ising_spin;
-	for (int i = 0; i<spin.size(); i++){
-		ising_spin = 2*irand.randInt(1)-1;
-		//cout<<ising_spin<<" ";
-		spin.at(i) = ising_spin;
-	}
+    for (int i = 0; i<spin.size(); i++){
+        ising_spin = 2*irand.randInt(1)-1;
+        //cout<<ising_spin<<" ";
+        spin.at(i) = ising_spin;
+    }
 
 
 }//randomize

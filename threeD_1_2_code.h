@@ -21,12 +21,14 @@ class ThreeD12Code
         double Energy;  //total energy of the system
 
         //All the 1-cells (bonds) that are attached to 2-cells (faces)
-        //vector<vector<int> > All_Neighbors; 
+        vector<vector<int> > All_Neighbors; 
 
         //The Face operators
         vector<vector<int> > Plaquette;
         ThreeD12Code(Spins & sigma, HyperCube & cube); 
         double CalcEnergy(Spins & sigma);
+        double CalcEnergyDiff(Spins & sigma, const int & flipsite);
+
         void LocalUpdate(Spins & sigma, const double & T, MTRand & ran);
 
         void print();
@@ -45,7 +47,7 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
     N_ = 3*cube.N_; //3D lattice BOND variables...
 
     sigma.resize(N_); //these are the degrees of freedom
-	sigma.randomize();
+    sigma.randomize();
 
     Faces = N_;  //in 3D the number of faces equals the numbers of DOFs
 
@@ -106,7 +108,15 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
         if (Check[j] != 4) cout<<"Plaquette error \n";
     //cout<<j<<" "<<Check[j]<<endl;
 
-    cout<<CalcEnergy(sigma)<<endl;      
+    Energy = CalcEnergy(sigma);      
+    cout<<Energy<<endl;      
+
+    //Now, make the data structure used to relate the DOF to the 4 plaquettes
+    All_Neighbors.resize(N_);
+    for (int i=0; i<Plaquette.size(); i++)
+        for (int j=0; j<Plaquette[i].size(); j++)
+            All_Neighbors[Plaquette[i][j]].push_back(i);
+
 
 }//constructor
 
@@ -123,6 +133,12 @@ void ThreeD12Code::print(){
             cout<<Plaquette[i][j]<<" ";
         cout<<endl;
     }//i
+
+    for (int i=0; i<All_Neighbors.size(); i++){
+        for (int j=0; j<All_Neighbors[i].size(); j++)
+            cout<<All_Neighbors[i][j]<<" ";
+        cout<<endl;
+    }
 
 }//print
 
@@ -141,6 +157,27 @@ double ThreeD12Code::CalcEnergy(Spins & sigma){
 
 }
 
+//the fast way to calculte the new energy
+double ThreeD12Code::CalcEnergyDiff(Spins & sigma, const int & flipsite){
+
+    double DeltaE = 0.0;
+    double spinProd;
+
+    for (int j=0; j<All_Neighbors[flipsite].size(); j++){
+        spinProd = 1; 
+        for(int k=0; k<Plaquette[0].size(); k++) {
+            spinProd *= sigma.spin[ Plaquette[All_Neighbors[flipsite][j]][k] ];
+        }//k
+
+        DeltaE += -spinProd; //ferromagnetic
+    }//j
+
+    DeltaE *= 2.0; //double counting
+
+    return DeltaE;
+
+}
+
 //Calculates a number of single-spin flips
 void ThreeD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
 
@@ -155,8 +192,10 @@ void ThreeD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
 
         sigma.flip(site);  //trial flip
         Eold = Energy;
-        Enew = CalcEnergy(sigma);
-        Ediff = Enew - Eold;
+        //Enew = CalcEnergy(sigma); //slow way
+        //Ediff = Enew - Eold;
+        Ediff = CalcEnergyDiff(sigma,site); //fast way
+        Enew = Eold + Ediff;
 
         //cout<<Energy<<" "<<Ediff<<endl;
 

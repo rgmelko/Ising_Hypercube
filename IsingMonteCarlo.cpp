@@ -28,8 +28,13 @@ int main(){
     //hamil.print();
 
     //sigma.print();
-    //sigma.flip(mrand.randInt(cube.N_-1));
     //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+    //int rspin=mrand.randInt(cube.N_-1);
+    ////sigma.flip(mrand.randInt(cube.N_-1));
+    //sigma.flip(rspin);
+    //cout<<"DeltaE: "<<hamil.CalcEnergyDiff(sigma,rspin)<<endl;
+    //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
+
     //sigma.print();
 
     Measure accum(hamil.N_,param);
@@ -40,7 +45,7 @@ int main(){
 
     //MCS binning
     for (int k=0; k<param.nBin_; k++){ 
-    accum.zero();
+        accum.zero();
         for (int i=0; i<param.MCS_; i++){ 
             hamil.LocalUpdate(sigma,param.Temp_,mrand);
             accum.record(hamil.Energy,sigma);
