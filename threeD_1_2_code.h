@@ -27,7 +27,7 @@ class ThreeD12Code
         vector<vector<int> > Plaquette;
         ThreeD12Code(Spins & sigma, HyperCube & cube); 
         double CalcEnergy(Spins & sigma);
-        void LocalUpdate(Spins & sigma, double & T, MTRand & ran);
+        void LocalUpdate(Spins & sigma, const double & T, MTRand & ran);
 
         void print();
 
@@ -44,7 +44,8 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
     D_ = 3;
     N_ = 3*cube.N_; //3D lattice BOND variables...
 
-	sigma.resize(N_); //these are the degrees of freedom
+    sigma.resize(N_); //these are the degrees of freedom
+	sigma.randomize();
 
     Faces = N_;  //in 3D the number of faces equals the numbers of DOFs
 
@@ -56,55 +57,55 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
     int Yneigh;
     int Zneigh;
     for (int i=0; i<Faces; i += 3 ){
-		    //XY plane
-			temp[0] = i;
-			temp[1] = i+1;
-			temp[2] = i+4;
-			temp[3] = i+3*L_;
-			//fix boundaries
-			if ((i/3+1)%L_ == 0)
-				temp[2] -= 3*L_;
-			if ( ( (i/3)%(L_*L_) >= (L_*L_) - L_) && ( (i/3)%(L_*L_) < (L_*L_) ) )
-				temp[3] -= 3*L_*L_;
+        //XY plane
+        temp[0] = i;
+        temp[1] = i+1;
+        temp[2] = i+4;
+        temp[3] = i+3*L_;
+        //fix boundaries
+        if ((i/3+1)%L_ == 0)
+            temp[2] -= 3*L_;
+        if ( ( (i/3)%(L_*L_) >= (L_*L_) - L_) && ( (i/3)%(L_*L_) < (L_*L_) ) )
+            temp[3] -= 3*L_*L_;
 
-			Plaquette.push_back(temp);
+        Plaquette.push_back(temp);
 
-		    //YZ plane
-			temp[0] = i+1;
-			temp[1] = i+2;
-			temp[2] = i+3*L_ + 2;
-			temp[3] = i+3*L_*L_ + 1;
-			if ( ( (i/3)%(L_*L_) >= (L_*L_) - L_) && ( (i/3)%(L_*L_) < (L_*L_) ) )
-				temp[2] -= 3*L_*L_;
-			if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
-				temp[3] -= 3*L_*L_*L_;
+        //YZ plane
+        temp[0] = i+1;
+        temp[1] = i+2;
+        temp[2] = i+3*L_ + 2;
+        temp[3] = i+3*L_*L_ + 1;
+        if ( ( (i/3)%(L_*L_) >= (L_*L_) - L_) && ( (i/3)%(L_*L_) < (L_*L_) ) )
+            temp[2] -= 3*L_*L_;
+        if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
+            temp[3] -= 3*L_*L_*L_;
 
-			Plaquette.push_back(temp);
+        Plaquette.push_back(temp);
 
-		    //XZ plane
-			temp[0] = i;
-			temp[1] = i+2;
-			temp[2] = i+5;
-			temp[3] = i+3*L_*L_;
-			if ((i/3+1)%L_ == 0)
-				temp[2] -= 3*L_;
-			if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
-				temp[3] -= 3*L_*L_*L_;
+        //XZ plane
+        temp[0] = i;
+        temp[1] = i+2;
+        temp[2] = i+5;
+        temp[3] = i+3*L_*L_;
+        if ((i/3+1)%L_ == 0)
+            temp[2] -= 3*L_;
+        if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
+            temp[3] -= 3*L_*L_*L_;
 
-			Plaquette.push_back(temp);
+        Plaquette.push_back(temp);
     }//i
 
-	//DEBUG: check if Plaquette has any errors
-	vector<int> Check(Plaquette.size(),0);
-	//cout<<"Check size : "<<Check.size()<<endl;
-	for (int j=0; j<Check.size(); j++)
-		for (int k=0; k<Plaquette[j].size(); k++)
-			Check[Plaquette[j][k]]++;
+    //DEBUG: check if Plaquette has any errors
+    vector<int> Check(Plaquette.size(),0);
+    //cout<<"Check size : "<<Check.size()<<endl;
+    for (int j=0; j<Check.size(); j++)
+        for (int k=0; k<Plaquette[j].size(); k++)
+            Check[Plaquette[j][k]]++;
 
-	for (int j=0; j<Check.size(); j++)
-		if (Check[j] != 4) cout<<"Plaquette error \n";
-		//cout<<j<<" "<<Check[j]<<endl;
-		
+    for (int j=0; j<Check.size(); j++)
+        if (Check[j] != 4) cout<<"Plaquette error \n";
+    //cout<<j<<" "<<Check[j]<<endl;
+
     cout<<CalcEnergy(sigma)<<endl;      
 
 }//constructor
@@ -133,7 +134,7 @@ double ThreeD12Code::CalcEnergy(Spins & sigma){
 
     for (int i=0; i<Plaquette.size(); i++){
         eTemp -=  sigma.spin[Plaquette[i][0]]*sigma.spin[Plaquette[i][1]]
-                  *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
+            *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
     }//i
 
     return eTemp;
@@ -141,7 +142,7 @@ double ThreeD12Code::CalcEnergy(Spins & sigma){
 }
 
 //Calculates a number of single-spin flips
-void ThreeD12Code::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
+void ThreeD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
 
     int site;  //random site for update
     double Eold, Enew, Ediff;

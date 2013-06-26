@@ -11,6 +11,7 @@ class PARAMS
     public:
         int nX_;      //linear size of lattice
         int Dim_;      //dimension of lattice
+        double Temp_;      //Temperature
         int EQL_;     //the number of Monte Carlo steps
         int MCS_;     //the number of Monte Carlo steps
         int nBin_;    //number of production bins
@@ -29,6 +30,7 @@ PARAMS::PARAMS(){
 
     pfin >> nX_;
     pfin >> Dim_;
+    pfin >> Temp_;
     pfin >> EQL_;
     pfin >> MCS_;
     pfin >> nBin_;
