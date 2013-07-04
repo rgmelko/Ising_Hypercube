@@ -26,7 +26,9 @@ int main(){
 
     //ThreeD12Code hamil(sigma,cube);
     GeneralD12Code hamil(sigma,cube);
-    //hamil.print();
+    hamil.print();
+
+    return 1;
 
     //sigma.print();
     //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;

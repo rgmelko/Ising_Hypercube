@@ -21,6 +21,7 @@ class GeneralD12Code
     public:
         int N0;
         int N1;   //number of DEGREES OF FREEDOM
+        int N2;   //number of 2 cells
         int D_;   //Dimension
         int L_;   //Linear size
 
@@ -39,9 +40,6 @@ class GeneralD12Code
 
         void print();
 
-    private:
-
-        int Faces; //The total number of faces
 
 };
 
@@ -51,12 +49,10 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
     L_ = cube.L_;
     D_ = cube.D_;
     N0 = cube.N_;
-    N1 = D_*cube.N_; //3D lattice BOND variables...
+    N1 = D_*cube.N_; //number of 1 cells
 
-    sigma.resize(N1); //these are the degrees of freedom
+    sigma.resize(N1); //these are the degrees of freedom (1 cells)
     sigma.randomize();
-
-    Faces = N1;  //in 3D the number of faces equals the numbers of DOFs
 
     //use it to built the sigma-z plaquettes
     vector <int> temp;
@@ -83,19 +79,23 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     }//v
 
+	N2 = Plaquette.size(); //number of 2 cells
 
     //DEBUG: check if Plaquette has any errors
-    vector<int> Check(Plaquette.size(),0);
+    //vector<int> Check(Plaquette.size(),0);
+    vector<int> Check(N1,0);
     //cout<<"Check size : "<<Check.size()<<endl;
-    for (int j=0; j<Check.size(); j++)
+    for (int j=0; j<Plaquette.size(); j++)
         for (int k=0; k<Plaquette[j].size(); k++)
             Check[Plaquette[j][k]]++;
 
-    for (int j=0; j<Check.size(); j++)
-        if (Check[j] != 4) cout<<"Plaquette error \n";
-    //cout<<j<<" "<<Check[j]<<endl;
-
-    Energy = CalcEnergy(sigma);      
+    for (int j=0; j<Check.size(); j++){
+		if (Check[j] != 2*(D_-1)){ 
+			cout<<"Plaquette error \n";
+			cout<<j<<" "<<Check[j]<<endl;
+		}	
+	}
+	Energy = CalcEnergy(sigma);      
     cout<<Energy<<endl;      
 
     //Now, make the data structure used to relate the DOF to the 4 plaquettes
@@ -112,7 +112,7 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 //print
 void GeneralD12Code::print(){
 
-    cout<<L_<<" "<<D_<<" "<<N1<<endl;
+    cout<<L_<<" "<<D_<<" "<<N1<<" "<<N2<<endl;
 
     cout<<"Plaquette \n";
     for (int i=0; i<Plaquette.size(); i++){
