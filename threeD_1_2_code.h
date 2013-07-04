@@ -14,7 +14,7 @@ using namespace std;
 class ThreeD12Code
 {
     public:
-        int N_;   //number of DEGREES OF FREEDOM
+        int N1;   //number of DEGREES OF FREEDOM (1-cells)
         int D_;   //Dimension
         int L_;   //Linear size
 
@@ -44,12 +44,12 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
 
     L_ = cube.L_;
     D_ = 3;
-    N_ = 3*cube.N_; //3D lattice BOND variables...
+    N1 = 3*cube.N_; //3D lattice BOND variables...
 
-    sigma.resize(N_); //these are the degrees of freedom
+    sigma.resize(N1); //these are the degrees of freedom
     sigma.randomize();
 
-    Faces = N_;  //in 3D the number of faces equals the numbers of DOFs
+    Faces = N1;  //in 3D the number of faces equals the numbers of DOFs
 
     //use it to built the sigma-z plaquettes
     vector <int> temp;
@@ -72,6 +72,18 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
 
         Plaquette.push_back(temp);
 
+        //XZ plane
+        temp[0] = i;
+        temp[1] = i+2;
+        temp[2] = i+5;
+        temp[3] = i+3*L_*L_;
+        if ((i/3+1)%L_ == 0)
+            temp[2] -= 3*L_;
+        if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
+            temp[3] -= 3*L_*L_*L_;
+
+        Plaquette.push_back(temp);
+
         //YZ plane
         temp[0] = i+1;
         temp[1] = i+2;
@@ -84,17 +96,6 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
 
         Plaquette.push_back(temp);
 
-        //XZ plane
-        temp[0] = i;
-        temp[1] = i+2;
-        temp[2] = i+5;
-        temp[3] = i+3*L_*L_;
-        if ((i/3+1)%L_ == 0)
-            temp[2] -= 3*L_;
-        if ( ( (i/3)%(L_*L_*L_) >= (L_*L_*L_) - L_*L_) && ( (i/3)%(L_*L_*L_) < (L_*L_*L_) ) )
-            temp[3] -= 3*L_*L_*L_;
-
-        Plaquette.push_back(temp);
     }//i
 
     //DEBUG: check if Plaquette has any errors
@@ -112,7 +113,7 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
     cout<<Energy<<endl;      
 
     //Now, make the data structure used to relate the DOF to the 4 plaquettes
-    All_Neighbors.resize(N_);
+    All_Neighbors.resize(N1);
     for (int i=0; i<Plaquette.size(); i++)
         for (int j=0; j<Plaquette[i].size(); j++)
             All_Neighbors[Plaquette[i][j]].push_back(i);
@@ -124,7 +125,7 @@ ThreeD12Code::ThreeD12Code(Spins & sigma, HyperCube & cube){
 //print
 void ThreeD12Code::print(){
 
-    cout<<L_<<" "<<D_<<" "<<N_<<endl;
+    cout<<L_<<" "<<D_<<" "<<N1<<endl;
 
     cout<<"Plaquette \n";
     for (int i=0; i<Plaquette.size(); i++){
@@ -185,9 +186,9 @@ void ThreeD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
     double Eold, Enew, Ediff;
     double m_rand; //metropolis random number
 
-    for (int j=0; j<N_; j++){ //peform N random single spin flips
+    for (int j=0; j<N1; j++){ //peform N random single spin flips
 
-        site = ran.randInt(N_-1);
+        site = ran.randInt(N1-1);
         //cout<<"site is "<<site<<endl;
 
         sigma.flip(site);  //trial flip

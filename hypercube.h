@@ -4,6 +4,11 @@
 // hypercube.h
 // a class to make a hypercubic lattice of arbitrary dimension
 
+#define PRINT_RED(x) std::cout << "\033[1;31m" << x << "\033[0m" << " "
+#define PRINT_BLUE(x) std::cout << "\033[1;34m" << x << "\033[0m" << " "
+#define PRINT_GREEN(x) std::cout << "\033[1;32m" << x << "\033[0m" << " "
+#define PRINT_YELLOW(x) std::cout << "\033[1;33m" << x << "\033[0m" << " "
+
 #include <vector>
 #include <iostream>
 
@@ -94,17 +99,20 @@ void HyperCube::print(){
         cout<<i<<" ";
         for (int j=0;j<Neighbors[i].size();j++){
             //cout<<j<<" ";
-            cout<<Neighbors[i][j]<<" ";
+            //cout<<Neighbors[i][j]<<" ";
+            PRINT_RED(Neighbors[i][j]);
         }
         cout<<endl;
     }//i
 
     cout<<"Coordinates:"<<endl;
     for (int i=0;i<Coordinates.size();i++){
-        //cout<<i<<" ";
+        cout<<i<<" ";
         for (int j=0;j<Coordinates[i].size();j++){
             //cout<<j<<" ";
-            cout<<Coordinates[i][j]<<" ";
+            //cout<<Coordinates[i][j]<<" ";
+			PRINT_YELLOW(Coordinates[i][j]);
+
         }
         cout<<endl;
     }//i

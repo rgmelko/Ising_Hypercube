@@ -7,7 +7,8 @@ using namespace std;
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-#include "threeD_1_2_code.h"
+//#include "threeD_1_2_code.h"
+#include "generalD_1_2_code.h"
 #include "measure.h"
 
 int main(){
@@ -24,8 +25,11 @@ int main(){
     //Spins sigma(cube.N_);
     Spins sigma; //Assign size of spins in Hamiltonian
 
-    ThreeD12Code hamil(sigma,cube);
-    //hamil.print();
+    //ThreeD12Code hamil(sigma,cube);
+    GeneralD12Code hamil(sigma,cube);
+    hamil.print();
+
+    return 0;
 
     //sigma.print();
     //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
@@ -37,7 +41,7 @@ int main(){
 
     //sigma.print();
 
-    Measure accum(hamil.N_,param);
+    Measure accum(hamil.N1,param);
     //insert T loop here
 
     //Equilibriation
