@@ -7,8 +7,7 @@ using namespace std;
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-//#include "threeD_1_2_code.h"
-#include "generalD_1_2_code.h"
+#include "generalD_1_2.code.h"
 #include "measure.h"
 
 int main(){
@@ -27,9 +26,7 @@ int main(){
 
     //ThreeD12Code hamil(sigma,cube);
     GeneralD12Code hamil(sigma,cube);
-    hamil.print();
-
-    return 0;
+    //hamil.print();
 
     //sigma.print();
     //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
