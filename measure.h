@@ -12,6 +12,7 @@ class Measure
     public:
       double TOT_energy;   //energy
       double TOT_energy2;  //energy^2
+      double TOT_Mag;    //magnetization s
       double TOT_Mag2;    //magnetization squared
 
       Measure(const int &, const PARAMS &);
@@ -29,6 +30,7 @@ Measure::Measure(const int & N, const PARAMS & p){
 
     TOT_energy = 0.0;
     TOT_energy2 = 0.0;
+    TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
 }
 
@@ -37,6 +39,7 @@ void Measure::zero(){
 
     TOT_energy = 0.0;
     TOT_energy2 = 0.0;
+    TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
 }
 
@@ -46,11 +49,12 @@ void Measure::record(double & energy, Spins & sigma){
     TOT_energy += energy;
     TOT_energy2 += energy * energy;
 
-    unsigned long int mag = 0;
+    long int mag = 0;
     for (int i=0; i<sigma.spin.size(); i++)
         mag += sigma.spin[i];
 
-    TOT_Mag2 += mag*mag;
+    TOT_Mag += 1.0*mag;
+    TOT_Mag2 += 1.0*mag*mag;
 
 
 }//update
@@ -64,7 +68,9 @@ void Measure::output(const double & T){
     cfout<<TOT_energy/(1.0*MCS * Nspin)<<" ";
 	double Cv = TOT_energy2/(1.0*MCS) - TOT_energy*TOT_energy/(1.0*MCS*MCS); 
     cfout<<Cv/(T*T*1.0*Nspin)<<" ";
-    cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<"\n";
+    cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<" ";
+	double susc = TOT_Mag2/(1.0*MCS) - TOT_Mag*TOT_Mag/(1.0*MCS*MCS); 
+    cfout<<susc/(T*1.0*Nspin)<<"\n";
 
 	cfout.close();
 

@@ -22,23 +22,10 @@ int main(){
 
     //define the Ising variables +1 or -1: initialize to 1
     //Spins sigma(cube.N_);
-    Spins sigma; //Assign size of spins in Hamiltonian
+    Spins sigma; //Assign size of spins in Hamiltonian below
 
-    //ThreeD12Code hamil(sigma,cube);
     GeneralD12Code hamil(sigma,cube);
-    hamil.print();
-
-    return 1;
-
-    //sigma.print();
-    //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
-    //int rspin=mrand.randInt(cube.N_-1);
-    ////sigma.flip(mrand.randInt(cube.N_-1));
-    //sigma.flip(rspin);
-    //cout<<"DeltaE: "<<hamil.CalcEnergyDiff(sigma,rspin)<<endl;
-    //cout<<"Energy: "<<hamil.CalcEnergy(sigma)<<endl;
-
-    //sigma.print();
+    //hamil.print();
 
     Measure accum(hamil.N1,param);
     //insert T loop here
@@ -54,7 +41,7 @@ int main(){
             accum.record(hamil.Energy,sigma);
         }//i
         accum.output(param.Temp_);
-        sigma.print();
+        //sigma.print();
     }//k
 
     return 0;
