@@ -11,7 +11,7 @@ using namespace std;
 #include "isingHamiltonian.h"
 #include "measure.h"
 
-typedef boost::multi_array<int, 2> array_2t;
+//typedef boost::multi_array<int, 2> array_2t;
 
 int main(){
 
@@ -27,8 +27,8 @@ int main(){
     //Spins sigma(cube.N_);
     Spins sigma; //Assign size of spins in Hamiltonian below
 
-    IsingHamiltonian hamil(sigma,cube);
-    //GeneralD12Code hamil(sigma,cube);
+    IsingHamiltonian hamil(sigma,cube); //Ising model
+    //GeneralD12Code hamil(sigma,cube); //toric code
     hamil.print();
 
     return 0;
