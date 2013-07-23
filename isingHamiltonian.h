@@ -42,6 +42,9 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
     D_ = cube.D_;
     N_ = cube.N_;
 
+    sigma.resize(N_); //these are the degrees of freedom (1 cells)
+    sigma.randomize();
+
     Bonds_Per_Site = 2*D_;  //this will double count the total number of bonds  
 
     //resize the empty 2D array

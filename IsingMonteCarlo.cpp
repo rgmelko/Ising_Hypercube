@@ -7,7 +7,8 @@ using namespace std;
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-#include "generalD_1_2.code.h"
+//#include "generalD_1_2.code.h"
+#include "isingHamiltonian.h"
 #include "measure.h"
 
 int main(){
@@ -24,25 +25,30 @@ int main(){
     //Spins sigma(cube.N_);
     Spins sigma; //Assign size of spins in Hamiltonian below
 
-    GeneralD12Code hamil(sigma,cube);
+    IsingHamiltonian hamil(sigma,cube);
+    //GeneralD12Code hamil(sigma,cube);
     //hamil.print();
 
-    Measure accum(hamil.N1,param);
+    Measure accum(hamil.N_,param);     //Ising model
+    //Measure accum(hamil.N1,param);  //toric code
+
     //insert T loop here
+    for (double T = param.Temp_; T>0.5; T-=0.1){
 
-    //Equilibriation
-    for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,param.Temp_,mrand);
+        //Equilibriation
+        for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
 
-    //MCS binning
-    for (int k=0; k<param.nBin_; k++){ 
-        accum.zero();
-        for (int i=0; i<param.MCS_; i++){ 
-            hamil.LocalUpdate(sigma,param.Temp_,mrand);
-            accum.record(hamil.Energy,sigma);
-        }//i
-        accum.output(param.Temp_);
-        //sigma.print();
-    }//k
+        //MCS binning
+        for (int k=0; k<param.nBin_; k++){ 
+            accum.zero();
+            for (int i=0; i<param.MCS_; i++){ 
+                hamil.LocalUpdate(sigma,T,mrand);
+                accum.record(hamil.Energy,sigma);
+            }//i
+            accum.output(T);
+            //sigma.print();
+        }//k
+    }//T
 
     return 0;
 
