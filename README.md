@@ -6,6 +6,7 @@ A Monte Carlo implementation of the Ising Hamiltonian on a hypercube of arbitrar
 | D | Tc |
 |----|----|
 |2 | 2.27|
+|3 | 4.51|
 |6 | 10.83|
 |7 | 12.87|
 
