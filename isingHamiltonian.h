@@ -4,12 +4,21 @@
 // isingHamiltonian.h
 // a class calculate the energy of an Ising model
 
+#define PRINT_RED(x) std::cout << "\033[1;31m" << x << "\033[0m" << " "
+#define PRINT_BLUE(x) std::cout << "\033[1;34m" << x << "\033[0m" << " "
+#define PRINT_GREEN(x) std::cout << "\033[1;32m" << x << "\033[0m" << " "
+#define PRINT_YELLOW(x) std::cout << "\033[1;33m" << x << "\033[0m" << " "
+
 #include "spins.h"
 #include "MersenneTwister.h"
 #include <vector>
 #include <iostream>
+#include <boost/multi_array.hpp>
 
 using namespace std;
+
+//typedef vector<vector<int> > array_2t;
+typedef boost::multi_array<int, 2> array_2t;
 
 class IsingHamiltonian 
 {
@@ -23,7 +32,8 @@ class IsingHamiltonian
         double Energy;  //total energy of the system
 
         //All the 2*D neighbors of a given site
-        vector<vector<int> > All_Neighbors; 
+        array_2t All_Neighbors; 
+        //vector<vector<int> > All_Neighbors; 
         //you will double count if you calculate energy from this directly...
 
         IsingHamiltonian(Spins & sigma, HyperCube & cube); 
@@ -48,9 +58,12 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
     Bonds_Per_Site = 2*D_;  //this will double count the total number of bonds  
 
     //resize the empty 2D array
-    All_Neighbors.resize(N_);
-    for (int i=0; i<All_Neighbors.size(); i++)
-        All_Neighbors[i].resize(Bonds_Per_Site);
+    //------vector< vector < > >
+    // All_Neighbors.resize(N_);
+    // for (int i=0; i<All_Neighbors.size(); i++)
+    //     All_Neighbors[i].resize(Bonds_Per_Site);
+    //------boost multi_array
+    All_Neighbors.resize(boost::extents[N_][Bonds_Per_Site]);
 
     //build it from the hypercubic lattice
     for (int i=0; i<All_Neighbors.size(); i++){
@@ -70,7 +83,13 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
 //print
 void IsingHamiltonian::print(){
 
+    PRINT_GREEN("L, D and N: ");
     cout<<L_<<" "<<D_<<" "<<N_<<endl;
+
+    PRINT_BLUE("Boost array dimension and shape: ");
+    cout<<All_Neighbors.dimensionality<<" ";
+    cout<<All_Neighbors.shape()[0]<<" ";
+    cout<<All_Neighbors.shape()[1]<<endl;
 
     for (int i=0; i<All_Neighbors.size(); i++){
         cout<<i<<" ";

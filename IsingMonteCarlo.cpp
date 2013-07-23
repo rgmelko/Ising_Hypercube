@@ -11,6 +11,8 @@ using namespace std;
 #include "isingHamiltonian.h"
 #include "measure.h"
 
+typedef boost::multi_array<int, 2> array_2t;
+
 int main(){
 
     PARAMS param; //read parameter file
@@ -27,7 +29,9 @@ int main(){
 
     IsingHamiltonian hamil(sigma,cube);
     //GeneralD12Code hamil(sigma,cube);
-    //hamil.print();
+    hamil.print();
+
+    return 0;
 
     Measure accum(hamil.N_,param);     //Ising model
     //Measure accum(hamil.N1,param);  //toric code
