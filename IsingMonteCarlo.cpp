@@ -7,8 +7,8 @@ using namespace std;
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-//#include "generalD_1_2.code.h"
-#include "isingHamiltonian.h"
+#include "generalD_1_2.code.h"
+//#include "isingHamiltonian.h"
 #include "measure.h"
 
 //typedef boost::multi_array<int, 2> array_2t;
@@ -27,17 +27,15 @@ int main(){
     //Spins sigma(cube.N_);
     Spins sigma; //Assign size of spins in Hamiltonian below
 
-    IsingHamiltonian hamil(sigma,cube); //Ising model
-    //GeneralD12Code hamil(sigma,cube); //toric code
-    hamil.print();
+    //IsingHamiltonian hamil(sigma,cube); //Ising model
+    GeneralD12Code hamil(sigma,cube); //toric code
+    //hamil.print();
 
-    return 0;
-
-    Measure accum(hamil.N_,param);     //Ising model
-    //Measure accum(hamil.N1,param);  //toric code
+    //Measure accum(hamil.N_,param);     //Ising model
+    Measure accum(hamil.N1,param);  //toric code
 
     //insert T loop here
-    for (double T = param.Temp_; T>0.5; T-=0.1){
+    for (double T = param.Temp_; T>param.Tlow_+param.Tstep_; T-=param.Tstep_){ //down
 
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
