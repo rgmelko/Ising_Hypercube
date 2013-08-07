@@ -295,6 +295,8 @@ void Percolation::extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labe
 
   NumberClusters = 0;
   int *new_labels = new int[n_labels](); // allocate array, initialized to zero
+  for (int i = 0; i < n_labels; i++) new_labels[i] = 0; //reinitialize for some compilers
+
   for (int i = 0; i < N; i++)
     if (occupancy[i]) {
       int x = uf_find(node_labels[i]);
