@@ -3,6 +3,7 @@
 
 // isingHamiltonian.h
 // a class calculate the energy of an Ising model
+// note: BOOST_DISABLE_ASSERTS
 
 #define PRINT_RED(x) std::cout << "\033[1;31m" << x << "\033[0m" << " "
 #define PRINT_BLUE(x) std::cout << "\033[1;34m" << x << "\033[0m" << " "
@@ -19,6 +20,7 @@ using namespace std;
 
 //typedef vector<vector<int> > array_2t;
 typedef boost::multi_array<int, 2> array_2t;
+typedef boost::multi_array<int, 1> array_1t;
 
 class IsingHamiltonian 
 {
@@ -33,15 +35,17 @@ class IsingHamiltonian
 
         //All the 2*D neighbors of a given site
         array_2t All_Neighbors; 
-        //vector<vector<int> > All_Neighbors; 
-        //you will double count if you calculate energy from this directly...
+		//the above also applies for usual Fortuin Kasteleyn clusters
+		array_1t occupancy;
+
+		//The neighbors from a percolation perspective
 
         IsingHamiltonian(Spins & sigma, HyperCube & cube); 
+		void print();
         double CalcEnergy(Spins & sigma);
         void LocalUpdate(Spins & sigma, double & T, MTRand & ran);
 
-        void print();
-
+        //void CalculateOccupancy();
 
 };
 
@@ -55,14 +59,13 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
     sigma.resize(N_); //these are the degrees of freedom (1 cells)
     sigma.randomize();
 
+	occupancy.resize(boost::extents[N_]); //calculate simple site percolation
+	for (int j=0; j<sigma.spin.size(); j++)
+		occupancy[j] = (sigma.spin[j]+1)/2; //0 or 1
+
     Bonds_Per_Site = 2*D_;  //this will double count the total number of bonds  
 
     //resize the empty 2D array
-    //------vector< vector < > >
-    // All_Neighbors.resize(N_);
-    // for (int i=0; i<All_Neighbors.size(); i++)
-    //     All_Neighbors[i].resize(Bonds_Per_Site);
-    //------boost multi_array
     All_Neighbors.resize(boost::extents[N_][Bonds_Per_Site]);
 
     //build it from the hypercubic lattice
@@ -73,9 +76,7 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
         }//j
     }//i
 
-
     cout<<CalcEnergy(sigma)/(1.0*N_)<<endl;      
-
 
 }//constructor
 
@@ -83,20 +84,26 @@ IsingHamiltonian::IsingHamiltonian(Spins & sigma, HyperCube & cube){
 //print
 void IsingHamiltonian::print(){
 
-    PRINT_GREEN("L, D and N: ");
-    cout<<L_<<" "<<D_<<" "<<N_<<endl;
+    //PRINT_GREEN("L, D and N: ");
+    //cout<<L_<<" "<<D_<<" "<<N_<<endl;
 
-    PRINT_BLUE("Boost array dimension and shape: ");
-    cout<<All_Neighbors.dimensionality<<" ";
-    cout<<All_Neighbors.shape()[0]<<" ";
-    cout<<All_Neighbors.shape()[1]<<endl;
+    //PRINT_BLUE("Boost array dimension and shape: ");
+    //cout<<All_Neighbors.dimensionality<<" ";
+    //cout<<All_Neighbors.shape()[0]<<" ";
+    //cout<<All_Neighbors.shape()[1]<<endl;
 
-    for (int i=0; i<All_Neighbors.size(); i++){
-        cout<<i<<" ";
-        for (int j=0; j<Bonds_Per_Site; j++)
-            cout<<All_Neighbors[i][j]<<" ";
-        cout<<endl;
-    }//i
+    //for (int i=0; i<All_Neighbors.size(); i++){
+    //    cout<<i<<" ";
+    //    for (int j=0; j<Bonds_Per_Site; j++)
+    //        cout<<All_Neighbors[i][j]<<" ";
+    //    cout<<endl;
+    //}//i
+
+    PRINT_RED("occupancy");cout<<endl;
+	for (int i=0; i<N_; i++){
+		cout<<occupancy[i]<<" ";
+		//if ((i+1)%L_ == 0) cout<<endl;
+	}
 
 }//print
 
@@ -156,8 +163,18 @@ void IsingHamiltonian::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
     }//j
 
     //cout<<"Emod "<<Energy<<endl;
+
+
 }//LocalUpdate
 
+
+////This calculates the occupancy, of arbitrary definition, of clusters for the 
+//// percolation calculation.
+//void IsingHamiltonian:: CalculateOccupancy(){
+//
+//   continue;
+//
+//}
 
 
 #endif

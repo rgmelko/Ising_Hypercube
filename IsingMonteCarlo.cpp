@@ -4,21 +4,24 @@
 #include <vector>
 using namespace std;
 
+#include <boost/multi_array.hpp>
+
 #include "hypercube.h"
 #include "MersenneTwister.h"
 #include "simparam.h"
-#include "generalD_1_2.code.h"
-//#include "isingHamiltonian.h"
+//#include "generalD_1_2.code.h"
+#include "isingHamiltonian.h"
 #include "measure.h"
 
+//typedef boost::multi_array<int, 1> array_1t; //for the H-K cluster algorithm
 //typedef boost::multi_array<int, 2> array_2t;
 
 int main(){
 
     PARAMS param; //read parameter file
     //param.print();
-
-    MTRand mrand(param.SEED_); //random number for metropolis
+    
+	MTRand mrand(param.SEED_); //random number for metropolis
 
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
     //cube.print();
@@ -27,12 +30,15 @@ int main(){
     //Spins sigma(cube.N_);
     Spins sigma; //Assign size of spins in Hamiltonian below
 
-    //IsingHamiltonian hamil(sigma,cube); //Ising model
-    GeneralD12Code hamil(sigma,cube); //toric code
-    //hamil.print();
+    IsingHamiltonian hamil(sigma,cube); //Ising model
+    //GeneralD12Code hamil(sigma,cube); //toric code
+	sigma.print();
+    hamil.print();
 
-    //Measure accum(hamil.N_,param);     //Ising model
-    Measure accum(hamil.N1,param);  //toric code
+	return 1;
+
+    Measure accum(hamil.N_,param);     //Ising model
+    //Measure accum(hamil.N1,param);  //toric code
 
     //insert T loop here
     for (double T = param.Temp_; T>param.Tlow_+param.Tstep_; T-=param.Tstep_){ //down
