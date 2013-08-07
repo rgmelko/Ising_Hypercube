@@ -3,15 +3,32 @@
 
 #include <boost/multi_array.hpp>
 
+#define PRINT_RED(x) std::cout << "\033[1;31m" << x << "\033[0m" << " "
+#define PRINT_BLUE(x) std::cout << "\033[1;34m" << x << "\033[0m" << " "
+#define PRINT_GREEN(x) std::cout << "\033[1;32m" << x << "\033[0m" << " "
+#define PRINT_YELLOW(x) std::cout << "\033[1;33m" << x << "\033[0m" << " "
+
 class Percolation
 {
 
 	private:
 	  int N_;
       boost::multi_array<int, 1> UniqueClusters;
+      boost::multi_array<int, 1> ClustSize;  //the size of each cluster
+     
+	  //all below from Grant's hk.cpp -------------
+	  int n_labels; //the length of the labels array
+      int *labels;
+      int uf_find(int x);
+      int uf_union(int x, int y);
+      int uf_make_set(void);
+	  void uf_initialize(int max_labels);
+      void uf_done(void);
+	  //-------------------------------------------
 
     public:
       double Avg_Clust_Size;   
+	  int NumberClusters;
 
       Percolation(const int & N);    
       void zero();
@@ -36,7 +53,9 @@ class Percolation
 //constructor
 Percolation::Percolation(const int & N){
 
-    N_ = N;
+    N_ = N; //number of ising variables that can be in a cluster
+
+	n_labels = 0; /* length of the labels array */
 
     Avg_Clust_Size= 0;
 
@@ -44,10 +63,17 @@ Percolation::Percolation(const int & N){
 
 void Percolation::print(){
 
+    PRINT_YELLOW("Cluster determination")<<endl;
+    cout<<"there are "<<NumberClusters<<" labels \n";
     for (int i=0; i<N_; i++){
 		cout<<UniqueClusters[i]<<" ";
 	}
 	cout<<endl;
+
+    //print each cluster's size
+	PRINT_GREEN("Each cluster has a size (zero included):")<<endl;
+    for (int i=0; i<=NumberClusters; i++)
+		cout<<ClustSize[i]<<endl;
 
 }
 
@@ -60,10 +86,15 @@ void Percolation::zero(){
 void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs, 
 	                         const boost::multi_array<int, 1>& occupancy) {
 
-	extended_hoshen_kopelman(UniqueClusters,nbs,occupancy);
+    extended_hoshen_kopelman(UniqueClusters,nbs,occupancy);
+
+    ClustSize.resize(boost::extents[NumberClusters+1]);
+
+    for (int i=0; i<N_; i++) { //note 0 is not a cluster
+		ClustSize[UniqueClusters[i]] ++;
+	}
 
 }
-
 
 
 
@@ -106,10 +137,7 @@ void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs,
  http://www.ocf.berkeley.edu/~fricke/projects/hoshenkopelman/hoshenkopelman.html
  */
 
-//#include "hk.h"
-//#include "percolation.h"
 
-#include <boost/multi_array.hpp>
 #include <boost/phoenix.hpp>
 #include <algorithm>
 #include <cassert>
@@ -124,12 +152,10 @@ using namespace std;
  equivalence class.  The labels start at one; labels[0] is a special value indicating
  the highest label already used. */
 
-int *labels;
-int n_labels = 0; /* length of the labels array */
 
 /*  uf_find returns the canonical label for the equivalence class containing x */
 
-int uf_find(int x) {
+int Percolation::uf_find(int x) {
   int y = x;
   while (labels[y] != y)
     y = labels[y];
@@ -144,13 +170,13 @@ int uf_find(int x) {
 
 /*  uf_union joins two equivalence classes and returns the canonical label of the resulting class. */
 
-int uf_union(int x, int y) {
+int Percolation::uf_union(int x, int y) {
   return labels[uf_find(x)] = uf_find(y);
 }
 
 /*  uf_make_set creates a new equivalence class and returns its label */
 
-int uf_make_set(void) {
+int Percolation::uf_make_set(void) {
   labels[0]++;
   assert(labels[0] < n_labels);
   labels[labels[0]] = labels[0];
@@ -159,7 +185,7 @@ int uf_make_set(void) {
 
 /*  uf_intitialize sets up the data structures needed by the union-find implementation. */
 
-void uf_initialize(int max_labels) {
+void Percolation::uf_initialize(int max_labels) {
   n_labels = max_labels;
   labels = new int[n_labels];
   labels[0] = 0;
@@ -167,7 +193,7 @@ void uf_initialize(int max_labels) {
 
 /*  uf_done frees the memory used by the union-find data structures */
 
-void uf_done(void) {
+void Percolation::uf_done(void) {
   n_labels = 0;
   delete[] labels;
   labels = 0;
@@ -267,6 +293,7 @@ void Percolation::extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labe
    determined by union/find into a new set of canonical labels, which are
    guaranteed to be sequential. */
 
+  NumberClusters = 0;
   int *new_labels = new int[n_labels](); // allocate array, initialized to zero
   for (int i = 0; i < N; i++)
     if (occupancy[i]) {
@@ -274,6 +301,7 @@ void Percolation::extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labe
       if (new_labels[x] == 0) {
         new_labels[0]++;
         new_labels[x] = new_labels[0];
+		NumberClusters ++;
       }
       node_labels[i] = new_labels[x];
     }
@@ -284,6 +312,7 @@ void Percolation::extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labe
   // Cleanup
   delete[] new_labels;
   uf_done();
+
 }
 
 /* A flavour of extended_hoshen_kopelman that uses standard arrays instead of
