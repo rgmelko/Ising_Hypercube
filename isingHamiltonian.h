@@ -104,6 +104,7 @@ void IsingHamiltonian::print(){
 		cout<<occupancy[i]<<" ";
 		//if ((i+1)%L_ == 0) cout<<endl;
 	}
+	cout<<endl;
 
 }//print
 

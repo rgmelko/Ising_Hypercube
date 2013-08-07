@@ -12,9 +12,7 @@ using namespace std;
 //#include "generalD_1_2.code.h"
 #include "isingHamiltonian.h"
 #include "measure.h"
-
-//typedef boost::multi_array<int, 1> array_1t; //for the H-K cluster algorithm
-//typedef boost::multi_array<int, 2> array_2t;
+#include "percolation.h"
 
 int main(){
 
@@ -34,6 +32,10 @@ int main(){
     //GeneralD12Code hamil(sigma,cube); //toric code
 	sigma.print();
     hamil.print();
+
+	Percolation perc(hamil.N_); //Ising model
+	perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);
+    perc.print();
 
 	return 1;
 
