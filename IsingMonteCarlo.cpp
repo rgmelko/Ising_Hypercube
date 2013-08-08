@@ -30,14 +30,14 @@ int main(){
 
     IsingHamiltonian hamil(sigma,cube); //Ising model
     //GeneralD12Code hamil(sigma,cube); //toric code
-	sigma.print();
-    hamil.print();
+	//sigma.print();
+    //hamil.print();
 
 	Percolation perc(hamil.N_); //Ising model
 	perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);
-    perc.print();
+    //perc.print();
 
-	return 1;
+	//return 1;
 
     Measure accum(hamil.N_,param);     //Ising model
     //Measure accum(hamil.N1,param);  //toric code
@@ -46,18 +46,25 @@ int main(){
     for (double T = param.Temp_; T>param.Tlow_+param.Tstep_; T-=param.Tstep_){ //down
 
         //Equilibriation
-        for (int i=0; i<param.EQL_; i++) hamil.LocalUpdate(sigma,T,mrand);
+        for (int i=0; i<param.EQL_; i++) {
+            hamil.LocalUpdate(sigma,T,mrand);
+            
+        }
 
         //MCS binning
-        for (int k=0; k<param.nBin_; k++){ 
+        //for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
+            perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand);
+                hamil.CalculateOccupancy(sigma);
+                perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);
                 accum.record(hamil.Energy,sigma);
             }//i
             accum.output(T);
+            perc.output(T,param.MCS_);
             //sigma.print();
-        }//k
+        //}//k
     }//T
 
     return 0;

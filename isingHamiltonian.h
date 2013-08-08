@@ -44,8 +44,7 @@ class IsingHamiltonian
 		void print();
         double CalcEnergy(Spins & sigma);
         void LocalUpdate(Spins & sigma, double & T, MTRand & ran);
-
-        //void CalculateOccupancy();
+        void CalculateOccupancy(Spins & sigma);
 
 };
 
@@ -169,13 +168,14 @@ void IsingHamiltonian::LocalUpdate(Spins & sigma, double & T, MTRand & ran){
 }//LocalUpdate
 
 
-////This calculates the occupancy, of arbitrary definition, of clusters for the 
-//// percolation calculation.
-//void IsingHamiltonian:: CalculateOccupancy(){
-//
-//   continue;
-//
-//}
+//This calculates the occupancy, of arbitrary definition, of clusters for the 
+// percolation calculation.
+void IsingHamiltonian:: CalculateOccupancy(Spins & sigma){
+
+    for (int j=0; j<sigma.spin.size(); j++)
+        occupancy[j] = (sigma.spin[j]+1)/2; //0 or 1
+
+}
 
 
 #endif

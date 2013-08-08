@@ -36,7 +36,7 @@ class Percolation
 	  void DetermineClusters(const boost::multi_array<int, 2>& nbs, 
 	                         const boost::multi_array<int, 1>& occupancy);
       //void record(double & energy, Spins & sigma);
-      void output(const int &);
+      void output(const double & T, const int & MCS);
 
 	  //Headers from Grant's hk.h file, worked into this class
 	  //-------------------------------------------
@@ -78,13 +78,13 @@ void Percolation::print(){
 
     cout<<Avg_Clust_Size<<endl;
 
-}
+}//print
 
 void Percolation::zero(){
 
-    Avg_Clust_Size= 0;
+    Avg_Clust_Size = 0.0;
 
-}
+}//zero
 
 void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs, 
 	                         const boost::multi_array<int, 1>& occupancy) {
@@ -107,11 +107,12 @@ void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs,
 
 }//DetermineClusters
 
-void Percolation::output(const int & MCS){
+void Percolation::output(const double & T, const int & MCS){
 
 	ofstream cfout;
 	cfout.open("01.data",ios::app);
 
+    cfout<<T<<" ";
     cfout<<Avg_Clust_Size/(1.0*MCS)<<" ";
     cfout<<endl;
 
