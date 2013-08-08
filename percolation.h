@@ -91,16 +91,19 @@ void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs,
 
     extended_hoshen_kopelman(UniqueClusters,nbs,occupancy);
 
-    ClustSize.resize(boost::extents[NumberClusters+1]);
+    ClustSize.resize(boost::extents[NumberClusters+1]); //resize
+    fill(ClustSize.begin(),ClustSize.end(),0); //reinitialize
 
     for (int i=0; i<N_; i++) { //note 0 is not a cluster
 		ClustSize[UniqueClusters[i]] ++;
 	}
 
     double Asize=0;
-    for (int i=1; i<(NumberClusters+1); i++)
-        Asize += 1.0*ClustSize[i];
-    Asize /= 1.0*NumberClusters;
+	if (NumberClusters !=0 ){
+		for (int i=1; i<(NumberClusters+1); i++)
+			Asize += 1.0*ClustSize[i];
+		Asize /= 1.0*NumberClusters;
+	}
 
     Avg_Clust_Size += Asize;
 

@@ -37,8 +37,6 @@ int main(){
 	perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);
     //perc.print();
 
-	//return 1;
-
     Measure accum(hamil.N_,param);     //Ising model
     //Measure accum(hamil.N1,param);  //toric code
 
@@ -52,7 +50,7 @@ int main(){
         }
 
         //MCS binning
-        //for (int k=0; k<param.nBin_; k++){ 
+        for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
             perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
@@ -64,7 +62,7 @@ int main(){
             accum.output(T);
             perc.output(T,param.MCS_);
             //sigma.print();
-        //}//k
+        }//k
     }//T
 
     return 0;
