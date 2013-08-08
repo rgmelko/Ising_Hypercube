@@ -116,7 +116,7 @@ void Percolation::output(const double & T, const int & MCS){
 	cfout.open("01.data",ios::app);
 
     cfout<<T<<" ";
-    cfout<<Avg_Clust_Size/(1.0*MCS)<<" ";
+    cfout<<Avg_Clust_Size/(1.0*MCS*N_)<<" ";
     cfout<<endl;
 
 	cfout.close();
