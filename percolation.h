@@ -39,14 +39,14 @@ class Percolation
       //void output(const double &);
 
 	  //Headers from Grant's hk.h file, worked into this class
-	  void Percolation::extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labels,
+	  void extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labels,
 			  const boost::multi_array<int, 2>& nbs,
 			  const boost::multi_array<int, 1>& occupancy);
 
-	  void Percolation::extended_hk_no_boost(int* node_labels, int const* const* nbs,
+	  void extended_hk_no_boost(int* node_labels, int const* const* nbs,
 			  const int* occupancy, int N, int m);
 
-	  int Percolation::hoshen_kopelman(int **matrix, int m, int n);
+	  int hoshen_kopelman(int **matrix, int m, int n);
 
 };
 
@@ -94,7 +94,7 @@ void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs,
 		ClustSize[UniqueClusters[i]] ++;
 	}
 
-}
+}//DetermineClusters
 
 
 
