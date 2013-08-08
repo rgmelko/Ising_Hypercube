@@ -36,9 +36,10 @@ class Percolation
 	  void DetermineClusters(const boost::multi_array<int, 2>& nbs, 
 	                         const boost::multi_array<int, 1>& occupancy);
       //void record(double & energy, Spins & sigma);
-      //void output(const double &);
+      void output(const int &);
 
 	  //Headers from Grant's hk.h file, worked into this class
+	  //-------------------------------------------
 	  void extended_hoshen_kopelman(boost::multi_array<int, 1>& node_labels,
 			  const boost::multi_array<int, 2>& nbs,
 			  const boost::multi_array<int, 1>& occupancy);
@@ -75,6 +76,8 @@ void Percolation::print(){
     for (int i=0; i<=NumberClusters; i++)
 		cout<<ClustSize[i]<<endl;
 
+    cout<<Avg_Clust_Size<<endl;
+
 }
 
 void Percolation::zero(){
@@ -94,8 +97,27 @@ void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs,
 		ClustSize[UniqueClusters[i]] ++;
 	}
 
+    double Asize=0;
+    for (int i=1; i<(NumberClusters+1); i++)
+        Asize += 1.0*ClustSize[i];
+    Asize /= 1.0*NumberClusters;
+
+    Avg_Clust_Size += Asize;
+
+
 }//DetermineClusters
 
+void Percolation::output(const int & MCS){
+
+	ofstream cfout;
+	cfout.open("01.data",ios::app);
+
+    cfout<<Avg_Clust_Size/(1.0*MCS)<<" ";
+    cfout<<endl;
+
+	cfout.close();
+
+}//output
 
 
 
