@@ -28,6 +28,7 @@ class Percolation
 
     public:
       double Avg_Clust_Size;   
+      double Largest_Clust_Size;   
 	  int NumberClusters;
 
       Percolation(const int & N);    
@@ -59,6 +60,7 @@ Percolation::Percolation(const int & N){
 	n_labels = 0; /* length of the labels array */
 
     Avg_Clust_Size= 0;
+    Largest_Clust_Size = 0;
 
 }
 
@@ -76,13 +78,15 @@ void Percolation::print(){
     for (int i=0; i<=NumberClusters; i++)
 		cout<<ClustSize[i]<<endl;
 
-    cout<<Avg_Clust_Size<<endl;
+    cout<<Avg_Clust_Size<<" ";
+    cout<<Largest_Clust_Size<<endl;
 
 }//print
 
 void Percolation::zero(){
 
     Avg_Clust_Size = 0.0;
+    Largest_Clust_Size= 0.0;
 
 }//zero
 
@@ -99,13 +103,17 @@ void Percolation::DetermineClusters(const boost::multi_array<int, 2>& nbs,
 	}
 
     double Asize=0;
+	int Lclust =0;
 	if (NumberClusters !=0 ){
-		for (int i=1; i<(NumberClusters+1); i++)
-			Asize += 1.0*ClustSize[i];
+		for (int i=1; i<(NumberClusters+1); i++){
+			Asize += 1.0*ClustSize[i]; //average cluster size
+			if (ClustSize[i] > Lclust) Lclust = ClustSize[i]; //largest cluster size
+		}
 		Asize /= 1.0*NumberClusters;
 	}
 
     Avg_Clust_Size += Asize;
+	Largest_Clust_Size += 1.0*Lclust;
 
 
 }//DetermineClusters
@@ -117,6 +125,7 @@ void Percolation::output(const double & T, const int & MCS){
 
     cfout<<T<<" ";
     cfout<<Avg_Clust_Size/(1.0*MCS*N_)<<" ";
+    cfout<<Largest_Clust_Size/(1.0*MCS*N_)<<" ";
     cfout<<endl;
 
 	cfout.close();
