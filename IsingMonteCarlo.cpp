@@ -22,9 +22,8 @@ int main(){
 	MTRand mrand(param.SEED_); //random number for metropolis
 
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
-    cube.print();
+    //cube.print();
 
-	return 1;
 
     //define the Ising variables +1 or -1: initialize to 1
     //Spins sigma(cube.N_);
@@ -33,8 +32,9 @@ int main(){
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
 	//sigma.print();
-    //hamil.print();
+    hamil.print();
 
+	return 1;
 
 	//Percolation perc(hamil.N_); //Ising model
 	//perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);

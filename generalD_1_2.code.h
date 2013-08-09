@@ -21,7 +21,10 @@ typedef boost::multi_array<int, 1> array_1t;
 
 class GeneralD12Code
 {
-    public:
+	private:
+		array_2t cube1;
+
+   public:
         int N0;
         int N1;   //number of DEGREES OF FREEDOM
         int N2;   //number of 2 cells
@@ -111,24 +114,53 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
             All_Neighbors[Plaquette[i][j]].push_back(i);
 
     //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
-//	if (D_ == 3){
-//		TwoCellNeighbors.resize(boost::extents[N2][10]); //TODO: ThreeD ONLY
-//		int downcube;
-//		for (int v=0; v<N0; v++){
-//			for (int d=0; d<3; d++){ //D choose 2
-//
-//				TwoCellNeighbors[v][0] = v+1; 
-//				TwoCellNeighbors[v][1] = v+2;
-//
-//				TwoCellNeighbors[v][2] = 3*cube.Neighbors[v][0]+2;
-//				TwoCellNeighbors[v][3] = 3*cube.Neighbors[v][1]+1;
-//				TwoCellNeighbors[v][4] = 3*cube.Neighbors[v][2]+0;
-//
-//
-//
-//			}//d
-//		}//v
-//	}//D=3 TODO
+
+	if (D_ == 3){                               //TODO: ThreeD ONLY
+		cube1.resize(boost::extents[N0][6]); 
+		for (int v=0; v<N0; v++){
+			cube1[v][0] = 3*v;
+			cube1[v][1] = 3*v+1;
+			cube1[v][2] = 3*v+2;
+			cube1[v][3] = 3*cube.Neighbors[v][0]+2;
+			cube1[v][4] = 3*cube.Neighbors[v][1]+1;
+			cube1[v][5] = 3*cube.Neighbors[v][2]+0;
+		}//v
+
+		TwoCellNeighbors.resize(boost::extents[N2][10]); 
+
+        int plaq, count;
+		int neg_dir;
+		int n_v; //negative neighbor of v
+		for (int v=0; v<N0; v++){
+			for (int d=0; d<3; d++){ //D choose 2
+				plaq = 3*v+d;
+
+				count = 0; //positive neighbors
+				for (int j=0; j<6; j++){ 
+					if (cube1[v][j] != plaq){ 
+						TwoCellNeighbors[plaq][count] = cube1[v][j];
+						count++;
+					}//if
+					else{ //determine the negative direction
+						if (j==0) neg_dir = 2;
+						else if (j==2) neg_dir =0;
+						else neg_dir = j;
+					}
+				}//j
+
+				count = 5; //negativeneighbors
+				n_v = cube.Negatives[v][neg_dir]; //TODO: this is especially 3D
+				//plaq = 3*n_v+d;
+				for (int j=0; j<6; j++){ 
+					if (cube1[n_v][j] != plaq){ 
+						TwoCellNeighbors[plaq][count] = cube1[n_v][j];
+						count++;
+					}//if
+				}//j
+
+			}//d
+		}//v
+	}//D=3 TODO
 
 
 }//constructor
@@ -158,13 +190,23 @@ void GeneralD12Code::print(){
     }
 
 	if (D_ == 3){ //TODO fix 3D
-		for (int i=0; i<TwoCellNeighbors.size(); i++){
+		for (int i=0; i<N0; i++){
 			PRINT_BLUE(i);
-			for (int j=0; j<TwoCellNeighbors[i].size(); j++){
+			for (int j=0; j<6; j++){
+				cout<<cube1[i][j]<<" ";
+			}
+			cout<<endl;
+		}//i
+
+		for (int i=0; i<N2; i++){
+			PRINT_RED(i);
+			for (int j=0; j<10; j++){
 				cout<<TwoCellNeighbors[i][j]<<" ";
 			}
 			cout<<endl;
 		}//i
+
+
 	}//3D TODO
 
 }//print
