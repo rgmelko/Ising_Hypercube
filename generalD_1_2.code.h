@@ -16,6 +16,9 @@
 
 using namespace std;
 
+typedef boost::multi_array<int, 2> array_2t;
+typedef boost::multi_array<int, 1> array_1t;
+
 class GeneralD12Code
 {
     public:
@@ -29,6 +32,9 @@ class GeneralD12Code
 
         //All the 1-cells (bonds) that are attached to 2-cells (faces)
         vector<vector<int> > All_Neighbors; 
+
+        //The neighbor list for 2-cells: defined if sharing a 3-cell
+        array_2t TwoCellNeighbors;
 
         //The Face operators
         vector<vector<int> > Plaquette;
@@ -104,6 +110,25 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
         for (int j=0; j<Plaquette[i].size(); j++)
             All_Neighbors[Plaquette[i][j]].push_back(i);
 
+    //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
+//	if (D_ == 3){
+//		TwoCellNeighbors.resize(boost::extents[N2][10]); //TODO: ThreeD ONLY
+//		int downcube;
+//		for (int v=0; v<N0; v++){
+//			for (int d=0; d<3; d++){ //D choose 2
+//
+//				TwoCellNeighbors[v][0] = v+1; 
+//				TwoCellNeighbors[v][1] = v+2;
+//
+//				TwoCellNeighbors[v][2] = 3*cube.Neighbors[v][0]+2;
+//				TwoCellNeighbors[v][3] = 3*cube.Neighbors[v][1]+1;
+//				TwoCellNeighbors[v][4] = 3*cube.Neighbors[v][2]+0;
+//
+//
+//
+//			}//d
+//		}//v
+//	}//D=3 TODO
 
 
 }//constructor
@@ -116,19 +141,31 @@ void GeneralD12Code::print(){
 
     cout<<"Plaquette \n";
     for (int i=0; i<Plaquette.size(); i++){
-        //cout<<i<<" ";
+		PRINT_RED(i);
         for (int j=0; j<4; j++)
             cout<<Plaquette[i][j]<<" ";
         //PRINT_RED(Plaquette[i][j]);
         cout<<endl;
     }//i
 
-    for (int i=0; i<All_Neighbors.size(); i++){
-        for (int j=0; j<All_Neighbors[i].size(); j++)
+	for (int i=0; i<All_Neighbors.size(); i++){
+		PRINT_GREEN(i);
+		for (int j=0; j<All_Neighbors[i].size(); j++){
             cout<<All_Neighbors[i][j]<<" ";
+		}
         //PRINT_GREEN(All_Neighbors[i][j]);
         cout<<endl;
     }
+
+	if (D_ == 3){ //TODO fix 3D
+		for (int i=0; i<TwoCellNeighbors.size(); i++){
+			PRINT_BLUE(i);
+			for (int j=0; j<TwoCellNeighbors[i].size(); j++){
+				cout<<TwoCellNeighbors[i][j]<<" ";
+			}
+			cout<<endl;
+		}//i
+	}//3D TODO
 
 }//print
 

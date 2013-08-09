@@ -22,7 +22,8 @@ class HyperCube
         int N_; //total number of sites
 
         //the lattice is a vector of vectors: no double counting
-        vector<vector<int> > Neighbors;
+        vector<vector<int> > Neighbors; //neighbors with positive offsets
+        vector<vector<int> > Negatives; //neighbors with negative offsets
         vector<vector<int> > Coordinates;
 
         //public functions
@@ -49,7 +50,7 @@ HyperCube::HyperCube(int L, int D){
 
         temp.clear();
         for (int j=0;j<D_;j++){
-            if ( ( (i+myPow(L,j))%(myPow(L,(j+1))) >= 0) 
+            if ( ( (i+myPow(L,j))%(myPow(L,(j+1))) >= 0)  //TODO: this line not needed
                     && ( (i+myPow(L,j))%(myPow(L,(j+1))) < myPow(L,j) ) )
                 pair = i+myPow(L,j) - myPow(L,(j+1));
             else
@@ -60,6 +61,24 @@ HyperCube::HyperCube(int L, int D){
 
         Neighbors.push_back(temp);
     }//i
+
+    //Negative neighbors
+	Negatives = Neighbors;
+
+    for (int i=0;i<N_;i++){
+        temp.clear();
+        for (int j=0;j<D_;j++){
+            if ( ( (i+myPow(L,j))%(myPow(L,(j+1))) >= 0)  //TODO: this line not needed
+                    && ( (i+myPow(L,j))%(myPow(L,(j+1))) < myPow(L,j) ) )
+                pair = i+myPow(L,j) - myPow(L,(j+1));
+            else
+                pair = i+myPow(L,j);
+
+            Negatives[pair][j] = i;
+        }
+
+    }//i
+
 
     //build the (x,y,z,...) coordinates of each lattice site
     temp.clear();
@@ -98,25 +117,32 @@ void HyperCube::print(){
     for (int i=0;i<Neighbors.size();i++){
         cout<<i<<" ";
         for (int j=0;j<Neighbors[i].size();j++){
-            //cout<<j<<" ";
-            //cout<<Neighbors[i][j]<<" ";
             PRINT_RED(Neighbors[i][j]);
         }
         cout<<endl;
     }//i
 
-    cout<<"Coordinates:"<<endl;
-    for (int i=0;i<Coordinates.size();i++){
+    cout<<"Negative Neighbor list:"<<endl;
+    for (int i=0;i<Negatives.size();i++){
         cout<<i<<" ";
-        for (int j=0;j<Coordinates[i].size();j++){
-            //cout<<j<<" ";
-            //cout<<Coordinates[i][j]<<" ";
-			PRINT_YELLOW(Coordinates[i][j]);
-
+        for (int j=0;j<Negatives[i].size();j++){
+            PRINT_GREEN(Negatives[i][j]);
         }
         cout<<endl;
     }//i
 
+//    cout<<"Coordinates:"<<endl;
+//    for (int i=0;i<Coordinates.size();i++){
+//        cout<<i<<" ";
+//        for (int j=0;j<Coordinates[i].size();j++){
+//            //cout<<j<<" ";
+//            //cout<<Coordinates[i][j]<<" ";
+//			PRINT_YELLOW(Coordinates[i][j]);
+//
+//        }
+//        cout<<endl;
+//    }//i
+//
 }
 
 //a simple function to calculate powers of an integer: not for general use
