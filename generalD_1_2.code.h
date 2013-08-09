@@ -38,12 +38,15 @@ class GeneralD12Code
 
         //The neighbor list for 2-cells: defined if sharing a 3-cell
         array_2t TwoCellNeighbors;
+        //the occupancy - for percolation
+		array_1t occupancy;
 
         //The Face operators
         vector<vector<int> > Plaquette;
         GeneralD12Code(Spins & sigma, HyperCube & cube); 
         double CalcEnergy(Spins & sigma);
         double CalcEnergyDiff(Spins & sigma, const int & flipsite);
+        void CalculateOccupancy(Spins & sigma);
 
         void LocalUpdate(Spins & sigma, const double & T, MTRand & ran);
 
@@ -90,6 +93,8 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
 	N2 = Plaquette.size(); //number of 2 cells
 
+	occupancy.resize(boost::extents[N2]); //calculate percolation objects
+
     //DEBUG: check if Plaquette has any errors
     //vector<int> Check(Plaquette.size(),0);
     vector<int> Check(N1,0);
@@ -105,7 +110,9 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 		}	
 	}
 	Energy = CalcEnergy(sigma);      
-    cout<<Energy<<endl;      
+    cout<<"Energy: "<<Energy<<endl;      
+
+	CalculateOccupancy(sigma); //for percolation
 
     //Now, make the data structure used to relate the DOF to the 4 plaquettes
     All_Neighbors.resize(N1);
@@ -225,6 +232,29 @@ double GeneralD12Code::CalcEnergy(Spins & sigma){
     return eTemp;
 
 }
+
+//loops through to calculate the occupancy for percolation
+void GeneralD12Code::CalculateOccupancy(Spins & sigma){
+
+    double eTemp = 0.0;
+
+    int no_defect;
+    for (int i=0; i<Plaquette.size(); i++){
+		
+		no_defect = sigma.spin[Plaquette[i][0]]*sigma.spin[Plaquette[i][1]]
+            *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
+
+        if (no_defect == -1) occupancy[i] = 1;  //this is a defect
+		else occupancy[i] = 0;
+
+        eTemp -= 1.0*no_defect;
+
+    }//i
+
+	if (eTemp != Energy) cout<<"Plaquette Energy Problem  \n";
+
+}//CalculateOccupancy
+
 
 //the fast way to calculte the new energy
 double GeneralD12Code::CalcEnergyDiff(Spins & sigma, const int & flipsite){

@@ -24,7 +24,6 @@ int main(){
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
     //cube.print();
 
-
     //define the Ising variables +1 or -1: initialize to 1
     //Spins sigma(cube.N_);
     Spins sigma; //Assign size of spins in Hamiltonian below
@@ -32,12 +31,12 @@ int main(){
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
 	//sigma.print();
-    hamil.print();
-
-	return 1;
+    //hamil.print();
 
 	//Percolation perc(hamil.N_); //Ising model
-	//perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);
+	Percolation perc(hamil.N2); //Toric code
+	//perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
+	perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
     //perc.print();
 
     //Measure accum(hamil.N_,param);     //Ising model
@@ -49,21 +48,21 @@ int main(){
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
             hamil.LocalUpdate(sigma,T,mrand);
-            
         }
 
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
-            //perc.zero();
+            perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand);
-                //hamil.CalculateOccupancy(sigma);
-                //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy);
+                hamil.CalculateOccupancy(sigma);
+                //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
+                perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Ising
                 accum.record(hamil.Energy,sigma);
             }//i
             accum.output(T);
-            //perc.output(T,param.MCS_);
+            perc.output(T,param.MCS_);
             //sigma.print();
         }//k
     }//T
