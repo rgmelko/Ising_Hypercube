@@ -17,3 +17,14 @@ https://en.wikipedia.org/wiki/Hypercube
 Percolation
 -----------
 http://arxiv.org/abs/cond-mat/0101295
+
+Number of cells in general D
+-----------
+
+| D | N_1 | N_2 |  N_3 |
+|----|----|---|---|
+|1 | 1 | 0 | 0 |
+|2 | 2 | 1 | 0 |
+|3 | 3 | 3 | 1 |
+|4 | 4 | 6 | 4 |
+|D | Dc1 | Dc2 | Dc3 |
