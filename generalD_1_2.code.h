@@ -22,7 +22,7 @@ typedef boost::multi_array<int, 1> array_1t;
 class GeneralD12Code
 {
     private:
-        array_2t cube1;
+        //array_2t cube1;
         array_2t dims2plane;
         int Nplane;   //number of planes (Nchoose2)        
 
@@ -41,7 +41,6 @@ class GeneralD12Code
 
         //The neighbor list for 2-cells: defined if sharing a 3-cell
         array_2t TwoCellNeighbors;
-        //vector<vector<int> > TwoCellNeighborsVector;
         
         //the occupancy - for percolation
         array_1t occupancy;
@@ -177,20 +176,16 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
 
-    cube1.resize(boost::extents[N0][6]); 
-    for (int v=0; v<N0; v++){
-        cube1[v][0] = 3*v;
-        cube1[v][1] = 3*v+1;
-        cube1[v][2] = 3*v+2;
-        cube1[v][3] = 3*cube.Neighbors[v][0]+2;
-        cube1[v][4] = 3*cube.Neighbors[v][1]+1;
-        cube1[v][5] = 3*cube.Neighbors[v][2]+0;
-    }//v
+    //cube1.resize(boost::extents[N0][6]); 
+    //for (int v=0; v<N0; v++){
+    //    cube1[v][0] = 3*v;
+    //    cube1[v][1] = 3*v+1;
+    //    cube1[v][2] = 3*v+2;
+    //    cube1[v][3] = 3*cube.Neighbors[v][0]+2;
+    //    cube1[v][4] = 3*cube.Neighbors[v][1]+1;
+    //    cube1[v][5] = 3*cube.Neighbors[v][2]+0;
+    //}//v
 
-
-    //vector<vector<int> > TwoCellNeighborsVector(N2);
-    //TwoCellNeighborsVector.resize(N2); 
-    //cout<<N2<<" "<<TwoCellNeighborsVector.size()<<endl;
 
     TwoCellNeighbors.resize(boost::extents[N2][10]); //TODO: 3D only 
     //initialize
@@ -212,8 +207,6 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
                             TwoCellNeighbors[p1][k] = p2;
                             break;
                         }
-
-                    //TwoCellNeighborsVector[Cubes[v3][i]].push_back[Cubes[v3][j]];
 
                 }//if
             }//j
