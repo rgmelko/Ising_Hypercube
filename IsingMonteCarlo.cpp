@@ -32,9 +32,7 @@ int main(){
     GeneralD12Code hamil(sigma,cube); //toric code
     hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
     //sigma.print();
-    hamil.print();
-
-    return 1;
+    //hamil.print();
 
     //Percolation perc(hamil.N_); //Ising model
     Percolation perc(hamil.N2); //Toric code
@@ -59,7 +57,7 @@ int main(){
             perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand);
-                hamil.CalculateOccupancy(sigma);
+                //hamil.CalculateOccupancy(sigma);
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma);

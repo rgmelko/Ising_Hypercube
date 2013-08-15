@@ -35,7 +35,7 @@ class GeneralD12Code
 
         double Energy;  //total energy of the system
 
-        //All the 1-cells (bonds) that are attached to 2-cells (faces)
+        //All of the 2-cells which are attached to a given 1-cell
         vector<vector<int> > All_Neighbors; 
 
         //The neighbor list for 2-cells: defined if sharing a 3-cell
@@ -163,7 +163,7 @@ void GeneralD12Code::PreparePercolation(const Spins & sigma, const HyperCube & c
             for (int j=0; j<D_; j++){
                 for (int k=0; k<D_; k++){
 
-                    if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
+                    if ((i<j)&&(j<k)){   //cout<<i<<" "<<j<<" "<<k<<endl;
 
                         temp[0] = Nplane*v + dims2plane[i][j];
                         temp[1] = Nplane*v + dims2plane[i][k];
@@ -242,23 +242,23 @@ void GeneralD12Code::print(){
         cout<<endl;
     }
 
-    for (int i=0; i<N3; i++){
-        //PRINT_BLUE(i);
-        for (int j=0; j<6; j++){
-            cout<<Cubes[i][j]<<" ";
-        }
-        cout<<endl;
-    }//i
-
-    cout<<endl;
-
-    for (int i=0; i<N2; i++){
-        //PRINT_RED(i);
-        for (int j=0; j<10*(D_-2); j++){
-            cout<<TwoCellNeighbors[i][j]<<" ";
-        }
-        cout<<endl;
-    }//i
+//    for (int i=0; i<N3; i++){
+//        //PRINT_BLUE(i);
+//        for (int j=0; j<6; j++){
+//            cout<<Cubes[i][j]<<" ";
+//        }
+//        cout<<endl;
+//    }//i
+//
+//    cout<<endl;
+//
+//    for (int i=0; i<N2; i++){
+//        //PRINT_RED(i);
+//        for (int j=0; j<10*(D_-2); j++){
+//            cout<<TwoCellNeighbors[i][j]<<" ";
+//        }
+//        cout<<endl;
+//    }//i
 
 
 }//print
@@ -329,6 +329,7 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
     double Eold, Enew, Ediff;
     double m_rand; //metropolis random number
 
+    bool accept;
     for (int j=0; j<N1; j++){ //peform N random single spin flips
 
         site = ran.randInt(N1-1);
@@ -344,6 +345,7 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
         //cout<<Energy<<" "<<Ediff<<endl;
 
         //Metropolis algorithm
+        accept = true;
         if (Ediff < 0){
             Energy = Enew;
         }
@@ -356,8 +358,17 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
             else{ // otherwise reject
                 sigma.flip(site);
                 Energy = Eold; //redundant
+				accept = false;
             }
-        }
+        }//Metropolis
+
+		if (accept == true) { //update the occupancy list since the flip was accepted
+			for (int k=0; k<All_Neighbors[site].size(); k++){ //bit flip
+				if (occupancy[All_Neighbors[site][k]] == 0) 
+					occupancy[All_Neighbors[site][k]] = 1; 
+				else occupancy[All_Neighbors[site][k]] = 0; 
+			}
+		}//accept
 
     }//j
 
