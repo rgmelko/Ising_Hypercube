@@ -41,6 +41,8 @@ class GeneralD12Code
 
         //The neighbor list for 2-cells: defined if sharing a 3-cell
         array_2t TwoCellNeighbors;
+        //vector<vector<int> > TwoCellNeighborsVector;
+        
         //the occupancy - for percolation
         array_1t occupancy;
 
@@ -175,52 +177,85 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
 
-    if (D_ == 3){                               //TODO: ThreeD ONLY
-        cube1.resize(boost::extents[N0][6]); 
-        for (int v=0; v<N0; v++){
-            cube1[v][0] = 3*v;
-            cube1[v][1] = 3*v+1;
-            cube1[v][2] = 3*v+2;
-            cube1[v][3] = 3*cube.Neighbors[v][0]+2;
-            cube1[v][4] = 3*cube.Neighbors[v][1]+1;
-            cube1[v][5] = 3*cube.Neighbors[v][2]+0;
-        }//v
+    cube1.resize(boost::extents[N0][6]); 
+    for (int v=0; v<N0; v++){
+        cube1[v][0] = 3*v;
+        cube1[v][1] = 3*v+1;
+        cube1[v][2] = 3*v+2;
+        cube1[v][3] = 3*cube.Neighbors[v][0]+2;
+        cube1[v][4] = 3*cube.Neighbors[v][1]+1;
+        cube1[v][5] = 3*cube.Neighbors[v][2]+0;
+    }//v
 
-        TwoCellNeighbors.resize(boost::extents[N2][10]); 
 
-        int plaq, count;
-        int neg_dir;
-        int n_v; //negative neighbor of v
-        for (int v=0; v<N0; v++){
-            for (int d=0; d<3; d++){ //D choose 2
-                plaq = 3*v+d;
+    //vector<vector<int> > TwoCellNeighborsVector(N2);
+    //TwoCellNeighborsVector.resize(N2); 
+    //cout<<N2<<" "<<TwoCellNeighborsVector.size()<<endl;
 
-                count = 0; //positive neighbors
-                for (int j=0; j<6; j++){ 
-                    if (cube1[v][j] != plaq){ 
-                        TwoCellNeighbors[plaq][count] = cube1[v][j];
-                        count++;
-                    }//if
-                    else{ //determine the negative direction
-                        if (j==0) neg_dir = 2;
-                        else if (j==2) neg_dir =0;
-                        else neg_dir = j;
-                    }
-                }//j
+    TwoCellNeighbors.resize(boost::extents[N2][10]); //TODO: 3D only 
+    //initialize
+    for (int i=0; i<TwoCellNeighbors.size(); i++)
+        for (int j=0; j<TwoCellNeighbors[i].size(); j++)
+            TwoCellNeighbors[i][j] = -99;
 
-                count = 5; //negativeneighbors
-                n_v = cube.Negatives[v][neg_dir]; //TODO: this is especially 3D
-                //plaq = 3*n_v+d;
-                for (int j=0; j<6; j++){ 
-                    if (cube1[n_v][j] != plaq){ 
-                        TwoCellNeighbors[plaq][count] = cube1[n_v][j];
-                        count++;
-                    }//if
-                }//j
+    int p1, p2;
+    for (int v3=0; v3<Cubes.size(); v3++){
 
-            }//d
-        }//v
-    }//D=3 TODO
+        for (int i=0; i<Cubes[v3].size(); i++){
+            p1 = Cubes[v3][i];
+            for (int j=0; j<Cubes[v3].size(); j++){
+                p2 = Cubes[v3][j];
+                if (p1 != p2){
+
+                    for (int k=0; k<TwoCellNeighbors[p1].size(); k++) //no push_back
+                        if (TwoCellNeighbors[p1][k] == -99){
+                            TwoCellNeighbors[p1][k] = p2;
+                            break;
+                        }
+
+                    //TwoCellNeighborsVector[Cubes[v3][i]].push_back[Cubes[v3][j]];
+
+                }//if
+            }//j
+        }//i
+
+    }//v3
+
+//----------
+//        TwoCellNeighbors.resize(boost::extents[N2][10]); 
+//
+//        int plaq, count;
+//        int neg_dir;
+//        int n_v; //negative neighbor of v
+//        for (int v=0; v<N0; v++){
+//            for (int d=0; d<3; d++){ //D choose 2
+//                plaq = 3*v+d;
+//
+//                count = 0; //positive neighbors
+//                for (int j=0; j<6; j++){ 
+//                    if (cube1[v][j] != plaq){ 
+//                        TwoCellNeighbors[plaq][count] = cube1[v][j];
+//                        count++;
+//                    }//if
+//                    else{ //determine the negative direction
+//                        if (j==0) neg_dir = 2;
+//                        else if (j==2) neg_dir =0;
+//                        else neg_dir = j;
+//                    }
+//                }//j
+//
+//                count = 5; //negativeneighbors
+//                n_v = cube.Negatives[v][neg_dir]; //TODO: this is especially 3D
+//                //plaq = 3*n_v+d;
+//                for (int j=0; j<6; j++){ 
+//                    if (cube1[n_v][j] != plaq){ 
+//                        TwoCellNeighbors[plaq][count] = cube1[n_v][j];
+//                        count++;
+//                    }//if
+//                }//j
+//
+//            }//d
+//        }//v
 
 
 }//constructor
@@ -251,15 +286,18 @@ void GeneralD12Code::print(){
 
     if (D_ == 3){ //TODO fix 3D
         for (int i=0; i<N0; i++){
-            PRINT_BLUE(i);
+            //PRINT_BLUE(i);
             for (int j=0; j<6; j++){
-                cout<<cube1[i][j]<<" ";
+                //cout<<cube1[i][j]<<" ";
+                cout<<Cubes[i][j]<<" ";
             }
             cout<<endl;
         }//i
 
+        cout<<endl;
+
         for (int i=0; i<N2; i++){
-            PRINT_RED(i);
+            //PRINT_RED(i);
             for (int j=0; j<10; j++){
                 cout<<TwoCellNeighbors[i][j]<<" ";
             }
