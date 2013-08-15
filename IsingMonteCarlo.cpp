@@ -31,7 +31,9 @@ int main(){
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
 	//sigma.print();
-    //hamil.print();
+    hamil.print();
+
+    return 1;
 
 	//Percolation perc(hamil.N_); //Ising model
 	Percolation perc(hamil.N2); //Toric code

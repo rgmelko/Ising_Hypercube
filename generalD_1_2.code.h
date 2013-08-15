@@ -21,8 +21,8 @@ typedef boost::multi_array<int, 1> array_1t;
 
 class GeneralD12Code
 {
-	private:
-		array_2t cube1;
+    private:
+        array_2t cube1;
         array_2t dims2plane;
         int Nplane;   //number of planes (Nchoose2)        
 
@@ -42,7 +42,7 @@ class GeneralD12Code
         //The neighbor list for 2-cells: defined if sharing a 3-cell
         array_2t TwoCellNeighbors;
         //the occupancy - for percolation
-		array_1t occupancy;
+        array_1t occupancy;
 
         //The Face operators
         vector<vector<int> > Plaquette;
@@ -97,12 +97,12 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     }//v
 
-	N2 = Plaquette.size(); //number of 2 cells
+    N2 = Plaquette.size(); //number of 2 cells
 
     //ANN's OTHER IDEA (JUST SO YOU KNOW)
     //Create an object that translates between 2 dimensions
     //and the plane they represent
-    dims2plane.resize(boost::extents[D_][D_];
+    dims2plane.resize(boost::extents[D_][D_]);
     int tempCount=0;
     for(int i=0; i<D_; i++){
         for(int j=0; j<D_; j++){
@@ -127,27 +127,26 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
             for (int j=0; j<D_; j++){
                 for (int k=0; k<D_; k++){
 
-                if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
+                    if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
 
-                    temp[0] = Nplane*v + dims2plane[i][j];
-                    temp[1] = Nplane*v + dims2plane[i][k];
-                    temp[2] = Nplane*v + dims2plane[j][k];
-                    temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
-                    temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
-                    temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
-                    Cubes.push_back(temp);
+                        temp[0] = Nplane*v + dims2plane[i][j];
+                        temp[1] = Nplane*v + dims2plane[i][k];
+                        temp[2] = Nplane*v + dims2plane[j][k];
+                        temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
+                        temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
+                        temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
+                        Cubes.push_back(temp);
 
-                }//if
-
+                    }//if
+                }//k
             }//j
         }//i
-
     }//v
 
     N3 = Cubes.size();//Number of 3-cells
     cout << "N3=" << N3 <<endl;
 
-	occupancy.resize(boost::extents[N2]); //calculate percolation objects
+    occupancy.resize(boost::extents[N2]); //calculate percolation objects
 
     //DEBUG: check if Plaquette has any errors
     //vector<int> Check(Plaquette.size(),0);
@@ -158,15 +157,15 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
             Check[Plaquette[j][k]]++;
 
     for (int j=0; j<Check.size(); j++){
-		if (Check[j] != 2*(D_-1)){ 
-			cout<<"Plaquette error \n";
-			cout<<j<<" "<<Check[j]<<endl;
-		}	
-	}
-	Energy = CalcEnergy(sigma);      
+        if (Check[j] != 2*(D_-1)){ 
+            cout<<"Plaquette error \n";
+            cout<<j<<" "<<Check[j]<<endl;
+        }   
+    }
+    Energy = CalcEnergy(sigma);      
     cout<<"Energy: "<<Energy<<endl;      
 
-	CalculateOccupancy(sigma); //for percolation
+    CalculateOccupancy(sigma); //for percolation
 
     //Now, make the data structure used to relate the DOF to the 4 plaquettes
     All_Neighbors.resize(N1);
@@ -176,52 +175,52 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
 
-	if (D_ == 3){                               //TODO: ThreeD ONLY
-		cube1.resize(boost::extents[N0][6]); 
-		for (int v=0; v<N0; v++){
-			cube1[v][0] = 3*v;
-			cube1[v][1] = 3*v+1;
-			cube1[v][2] = 3*v+2;
-			cube1[v][3] = 3*cube.Neighbors[v][0]+2;
-			cube1[v][4] = 3*cube.Neighbors[v][1]+1;
-			cube1[v][5] = 3*cube.Neighbors[v][2]+0;
-		}//v
+    if (D_ == 3){                               //TODO: ThreeD ONLY
+        cube1.resize(boost::extents[N0][6]); 
+        for (int v=0; v<N0; v++){
+            cube1[v][0] = 3*v;
+            cube1[v][1] = 3*v+1;
+            cube1[v][2] = 3*v+2;
+            cube1[v][3] = 3*cube.Neighbors[v][0]+2;
+            cube1[v][4] = 3*cube.Neighbors[v][1]+1;
+            cube1[v][5] = 3*cube.Neighbors[v][2]+0;
+        }//v
 
-		TwoCellNeighbors.resize(boost::extents[N2][10]); 
+        TwoCellNeighbors.resize(boost::extents[N2][10]); 
 
         int plaq, count;
-		int neg_dir;
-		int n_v; //negative neighbor of v
-		for (int v=0; v<N0; v++){
-			for (int d=0; d<3; d++){ //D choose 2
-				plaq = 3*v+d;
+        int neg_dir;
+        int n_v; //negative neighbor of v
+        for (int v=0; v<N0; v++){
+            for (int d=0; d<3; d++){ //D choose 2
+                plaq = 3*v+d;
 
-				count = 0; //positive neighbors
-				for (int j=0; j<6; j++){ 
-					if (cube1[v][j] != plaq){ 
-						TwoCellNeighbors[plaq][count] = cube1[v][j];
-						count++;
-					}//if
-					else{ //determine the negative direction
-						if (j==0) neg_dir = 2;
-						else if (j==2) neg_dir =0;
-						else neg_dir = j;
-					}
-				}//j
+                count = 0; //positive neighbors
+                for (int j=0; j<6; j++){ 
+                    if (cube1[v][j] != plaq){ 
+                        TwoCellNeighbors[plaq][count] = cube1[v][j];
+                        count++;
+                    }//if
+                    else{ //determine the negative direction
+                        if (j==0) neg_dir = 2;
+                        else if (j==2) neg_dir =0;
+                        else neg_dir = j;
+                    }
+                }//j
 
-				count = 5; //negativeneighbors
-				n_v = cube.Negatives[v][neg_dir]; //TODO: this is especially 3D
-				//plaq = 3*n_v+d;
-				for (int j=0; j<6; j++){ 
-					if (cube1[n_v][j] != plaq){ 
-						TwoCellNeighbors[plaq][count] = cube1[n_v][j];
-						count++;
-					}//if
-				}//j
+                count = 5; //negativeneighbors
+                n_v = cube.Negatives[v][neg_dir]; //TODO: this is especially 3D
+                //plaq = 3*n_v+d;
+                for (int j=0; j<6; j++){ 
+                    if (cube1[n_v][j] != plaq){ 
+                        TwoCellNeighbors[plaq][count] = cube1[n_v][j];
+                        count++;
+                    }//if
+                }//j
 
-			}//d
-		}//v
-	}//D=3 TODO
+            }//d
+        }//v
+    }//D=3 TODO
 
 
 }//constructor
@@ -234,41 +233,41 @@ void GeneralD12Code::print(){
 
     cout<<"Plaquette \n";
     for (int i=0; i<Plaquette.size(); i++){
-		PRINT_RED(i);
+        PRINT_RED(i);
         for (int j=0; j<4; j++)
             cout<<Plaquette[i][j]<<" ";
         //PRINT_RED(Plaquette[i][j]);
         cout<<endl;
     }//i
 
-	for (int i=0; i<All_Neighbors.size(); i++){
-		PRINT_GREEN(i);
-		for (int j=0; j<All_Neighbors[i].size(); j++){
+    for (int i=0; i<All_Neighbors.size(); i++){
+        PRINT_GREEN(i);
+        for (int j=0; j<All_Neighbors[i].size(); j++){
             cout<<All_Neighbors[i][j]<<" ";
-		}
+        }
         //PRINT_GREEN(All_Neighbors[i][j]);
         cout<<endl;
     }
 
-	if (D_ == 3){ //TODO fix 3D
-		for (int i=0; i<N0; i++){
-			PRINT_BLUE(i);
-			for (int j=0; j<6; j++){
-				cout<<cube1[i][j]<<" ";
-			}
-			cout<<endl;
-		}//i
+    if (D_ == 3){ //TODO fix 3D
+        for (int i=0; i<N0; i++){
+            PRINT_BLUE(i);
+            for (int j=0; j<6; j++){
+                cout<<cube1[i][j]<<" ";
+            }
+            cout<<endl;
+        }//i
 
-		for (int i=0; i<N2; i++){
-			PRINT_RED(i);
-			for (int j=0; j<10; j++){
-				cout<<TwoCellNeighbors[i][j]<<" ";
-			}
-			cout<<endl;
-		}//i
+        for (int i=0; i<N2; i++){
+            PRINT_RED(i);
+            for (int j=0; j<10; j++){
+                cout<<TwoCellNeighbors[i][j]<<" ";
+            }
+            cout<<endl;
+        }//i
 
 
-	}//3D TODO
+    }//3D TODO
 
 }//print
 
@@ -294,18 +293,18 @@ void GeneralD12Code::CalculateOccupancy(Spins & sigma){
 
     int no_defect;
     for (int i=0; i<Plaquette.size(); i++){
-		
-		no_defect = sigma.spin[Plaquette[i][0]]*sigma.spin[Plaquette[i][1]]
+        
+        no_defect = sigma.spin[Plaquette[i][0]]*sigma.spin[Plaquette[i][1]]
             *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
 
         if (no_defect == -1) occupancy[i] = 1;  //this is a defect
-		else occupancy[i] = 0;
+        else occupancy[i] = 0;
 
         eTemp -= 1.0*no_defect;
 
     }//i
 
-	if (eTemp != Energy) cout<<"Plaquette Energy Problem  \n";
+    if (eTemp != Energy) cout<<"Plaquette Energy Problem  \n";
 
 }//CalculateOccupancy
 
