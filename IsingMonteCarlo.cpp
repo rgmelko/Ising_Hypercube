@@ -18,8 +18,8 @@ int main(){
 
     PARAMS param; //read parameter file
     //param.print();
-    
-	MTRand mrand(param.SEED_); //random number for metropolis
+
+    MTRand mrand(param.SEED_); //random number for metropolis
 
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
     //cube.print();
@@ -31,15 +31,15 @@ int main(){
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
     hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
-	//sigma.print();
+    //sigma.print();
     hamil.print();
 
     return 1;
 
-	//Percolation perc(hamil.N_); //Ising model
-	Percolation perc(hamil.N2); //Toric code
-	//perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-	perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
+    //Percolation perc(hamil.N_); //Ising model
+    Percolation perc(hamil.N2); //Toric code
+    //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
+    perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
     //perc.print();
 
     //Measure accum(hamil.N_,param);     //Ising model

@@ -25,7 +25,7 @@ class GeneralD12Code
         array_2t dims2plane;
         int Nplane;   //number of planes (Nchoose2)        
 
-   public:
+    public:
         int N0;
         int N1;   //number of DEGREES OF FREEDOM
         int N2;   //number of 2 cells
@@ -40,7 +40,7 @@ class GeneralD12Code
 
         //The neighbor list for 2-cells: defined if sharing a 3-cell
         array_2t TwoCellNeighbors;
-        
+
         //the occupancy - for percolation
         array_1t occupancy;
 
@@ -98,32 +98,32 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     }//v
 
-	N2 = Plaquette.size(); //number of 2 cells
+    N2 = Plaquette.size(); //number of 2 cells
 
-	//DEBUG: check if Plaquette has any errors
-	//vector<int> Check(Plaquette.size(),0);
-	vector<int> Check(N1,0);
-	//cout<<"Check size : "<<Check.size()<<endl;
-	for (int j=0; j<Plaquette.size(); j++)
-		for (int k=0; k<Plaquette[j].size(); k++)
-			Check[Plaquette[j][k]]++;
+    //DEBUG: check if Plaquette has any errors
+    //vector<int> Check(Plaquette.size(),0);
+    vector<int> Check(N1,0);
+    //cout<<"Check size : "<<Check.size()<<endl;
+    for (int j=0; j<Plaquette.size(); j++)
+        for (int k=0; k<Plaquette[j].size(); k++)
+            Check[Plaquette[j][k]]++;
 
-	for (int j=0; j<Check.size(); j++){
-		if (Check[j] != 2*(D_-1)){ 
-			cout<<"Plaquette error \n";
-			cout<<j<<" "<<Check[j]<<endl;
-		}   
-	}
+    for (int j=0; j<Check.size(); j++){
+        if (Check[j] != 2*(D_-1)){ 
+            cout<<"Plaquette error \n";
+            cout<<j<<" "<<Check[j]<<endl;
+        }   
+    }
 
-	//Now, make the data structure used to relate the DOF to the 4 plaquettes
-	All_Neighbors.resize(N1);
-	for (int i=0; i<Plaquette.size(); i++)
-		for (int j=0; j<Plaquette[i].size(); j++)
-			All_Neighbors[Plaquette[i][j]].push_back(i);
+    //Now, make the data structure used to relate the DOF to the 4 plaquettes
+    All_Neighbors.resize(N1);
+    for (int i=0; i<Plaquette.size(); i++)
+        for (int j=0; j<Plaquette[i].size(); j++)
+            All_Neighbors[Plaquette[i][j]].push_back(i);
 
 
-	Energy = CalcEnergy(sigma);      
-	cout<<"Energy: "<<Energy<<endl;      
+    Energy = CalcEnergy(sigma);      
+    cout<<"Energy: "<<Energy<<endl;      
 
 
 }//constructor
@@ -132,89 +132,89 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 //Prepare data structures for percolation: valid in D>2 only
 void GeneralD12Code::PreparePercolation(const Spins & sigma, const HyperCube & cube){
 
-	if (D_ < 3) cout<<"ERROR: DIMENSION TOO LOW FOR PERCOLATION \n";
+    if (D_ < 3) cout<<"ERROR: DIMENSION TOO LOW FOR PERCOLATION \n";
 
-	//ANN's OTHER IDEA (JUST SO YOU KNOW)
-	//Create an object that translates between 2 dimensions
-	//and the plane they represent
-	dims2plane.resize(boost::extents[D_][D_]);
-	int tempCount=0;
-	for(int i=0; i<D_; i++){
-		for(int j=0; j<D_; j++){
-			if(i<j){ 
-				dims2plane[i][j]=tempCount;
-				dims2plane[j][i]=tempCount;
-				tempCount++;
-			}
-			else{ dims2plane[i][j]=-99; }
-		}//j
-	}//i
-	Nplane = tempCount; //this is the number of diff planes (Nchoose2)
-	//----Done filling dims2plane
+    //ANN's OTHER IDEA (JUST SO YOU KNOW)
+    //Create an object that translates between 2 dimensions
+    //and the plane they represent
+    dims2plane.resize(boost::extents[D_][D_]);
+    int tempCount=0;
+    for(int i=0; i<D_; i++){
+        for(int j=0; j<D_; j++){
+            if(i<j){ 
+                dims2plane[i][j]=tempCount;
+                dims2plane[j][i]=tempCount;
+                tempCount++;
+            }
+            else{ dims2plane[i][j]=-99; }
+        }//j
+    }//i
+    Nplane = tempCount; //this is the number of diff planes (Nchoose2)
+    //----Done filling dims2plane
 
-	//Now creating Cubes
-	//Input: cube identifier #
-	//Output: the 6 2-cells associated with that cube
+    //Now creating Cubes
+    //Input: cube identifier #
+    //Output: the 6 2-cells associated with that cube
     vector <int> temp;
     temp.assign(6,0);
-	for (int v=0; v<N0; v++ ){ //loop over 0-cells
+    for (int v=0; v<N0; v++ ){ //loop over 0-cells
 
-		for (int i=0; i<D_; i++){ //loop that defines all 2-cells per vertex
-			for (int j=0; j<D_; j++){
-				for (int k=0; k<D_; k++){
+        for (int i=0; i<D_; i++){ //loop that defines all 2-cells per vertex
+            for (int j=0; j<D_; j++){
+                for (int k=0; k<D_; k++){
 
-					if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
+                    if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
 
-						temp[0] = Nplane*v + dims2plane[i][j];
-						temp[1] = Nplane*v + dims2plane[i][k];
-						temp[2] = Nplane*v + dims2plane[j][k];
-						temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
-						temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
-						temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
-						Cubes.push_back(temp);
+                        temp[0] = Nplane*v + dims2plane[i][j];
+                        temp[1] = Nplane*v + dims2plane[i][k];
+                        temp[2] = Nplane*v + dims2plane[j][k];
+                        temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
+                        temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
+                        temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
+                        Cubes.push_back(temp);
 
-					}//if
-				}//k
-			}//j
-		}//i
-	}//v
+                    }//if
+                }//k
+            }//j
+        }//i
+    }//v
 
-	N3 = Cubes.size();//Number of 3-cells
-	cout << "N3=" << N3 <<endl;
+    N3 = Cubes.size();//Number of 3-cells
+    cout << "N3=" << N3 <<endl;
 
-	occupancy.resize(boost::extents[N2]); //calculate percolation objects
+    occupancy.resize(boost::extents[N2]); //calculate percolation objects
 
-	CalculateOccupancy(sigma); //for percolation
+    CalculateOccupancy(sigma); //for percolation
 
-	//Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
+    //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
 
 
-	TwoCellNeighbors.resize(boost::extents[N2][10*(D_-2)]); 
-	//initialize
-	for (int i=0; i<TwoCellNeighbors.size(); i++)
-		for (int j=0; j<TwoCellNeighbors[i].size(); j++)
-			TwoCellNeighbors[i][j] = -99;
+    TwoCellNeighbors.resize(boost::extents[N2][10*(D_-2)]); 
+    //initialize
+    for (int i=0; i<TwoCellNeighbors.size(); i++)
+        for (int j=0; j<TwoCellNeighbors[i].size(); j++)
+            TwoCellNeighbors[i][j] = -99;
 
-	int p1, p2;
-	for (int v3=0; v3<Cubes.size(); v3++){
+    int p1, p2;
+    for (int v3=0; v3<Cubes.size(); v3++){
 
-		for (int i=0; i<Cubes[v3].size(); i++){
-			p1 = Cubes[v3][i];
-			for (int j=0; j<Cubes[v3].size(); j++){
-				p2 = Cubes[v3][j];
-				if (p1 != p2){
+        for (int i=0; i<Cubes[v3].size(); i++){
+            p1 = Cubes[v3][i];
+            for (int j=0; j<Cubes[v3].size(); j++){
+                p2 = Cubes[v3][j];
+                if (p1 != p2){
 
-					for (int k=0; k<TwoCellNeighbors[p1].size(); k++) //no push_back
-						if (TwoCellNeighbors[p1][k] == -99){
-							TwoCellNeighbors[p1][k] = p2;
-							break;
-						}
+                    for (int k=0; k<TwoCellNeighbors[p1].size(); k++) //no push_back
+                        if (TwoCellNeighbors[p1][k] == -99){
+                            TwoCellNeighbors[p1][k] = p2;
+                            break;
+                        }
 
-				}//if
-			}//j
-		}//i
+                }//if
+            }//j
+        }//i
 
-	}//v3
+    }//v3
 
 }//PreparePercolation
 
@@ -242,28 +242,24 @@ void GeneralD12Code::print(){
         cout<<endl;
     }
 
-//    if (D_ == 3){ //TODO fix 3D
-        for (int i=0; i<N3; i++){
-            //PRINT_BLUE(i);
-            for (int j=0; j<6; j++){
-                //cout<<cube1[i][j]<<" ";
-                cout<<Cubes[i][j]<<" ";
-            }
-            cout<<endl;
-        }//i
-
+    for (int i=0; i<N3; i++){
+        //PRINT_BLUE(i);
+        for (int j=0; j<6; j++){
+            cout<<Cubes[i][j]<<" ";
+        }
         cout<<endl;
+    }//i
 
-        for (int i=0; i<N2; i++){
-            //PRINT_RED(i);
-            for (int j=0; j<10*(D_-2); j++){
-                cout<<TwoCellNeighbors[i][j]<<" ";
-            }
-            cout<<endl;
-        }//i
+    cout<<endl;
 
+    for (int i=0; i<N2; i++){
+        //PRINT_RED(i);
+        for (int j=0; j<10*(D_-2); j++){
+            cout<<TwoCellNeighbors[i][j]<<" ";
+        }
+        cout<<endl;
+    }//i
 
-//    }//3D TODO
 
 }//print
 
@@ -289,7 +285,7 @@ void GeneralD12Code::CalculateOccupancy(const Spins & sigma){
 
     int no_defect;
     for (int i=0; i<Plaquette.size(); i++){
-        
+
         no_defect = sigma.spin[Plaquette[i][0]]*sigma.spin[Plaquette[i][1]]
             *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
 
