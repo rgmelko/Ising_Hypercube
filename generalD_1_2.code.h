@@ -22,7 +22,6 @@ typedef boost::multi_array<int, 1> array_1t;
 class GeneralD12Code
 {
     private:
-        //array_2t cube1;
         array_2t dims2plane;
         int Nplane;   //number of planes (Nchoose2)        
 
@@ -51,7 +50,8 @@ class GeneralD12Code
         GeneralD12Code(Spins & sigma, HyperCube & cube); 
         double CalcEnergy(Spins & sigma);
         double CalcEnergyDiff(Spins & sigma, const int & flipsite);
-        void CalculateOccupancy(Spins & sigma);
+        void CalculateOccupancy(const Spins & sigma);
+        void PreparePercolation(const Spins & sigma, const HyperCube & cube);
 
         void LocalUpdate(Spins & sigma, const double & T, MTRand & ran);
 
@@ -98,161 +98,125 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
     }//v
 
-    N2 = Plaquette.size(); //number of 2 cells
+	N2 = Plaquette.size(); //number of 2 cells
 
-    //ANN's OTHER IDEA (JUST SO YOU KNOW)
-    //Create an object that translates between 2 dimensions
-    //and the plane they represent
-    dims2plane.resize(boost::extents[D_][D_]);
-    int tempCount=0;
-    for(int i=0; i<D_; i++){
-        for(int j=0; j<D_; j++){
-            if(i<j){ 
-                dims2plane[i][j]=tempCount;
-                dims2plane[j][i]=tempCount;
-                tempCount++;
-            }
-            else{ dims2plane[i][j]=-99; }
-        }//j
-    }//i
-    Nplane = tempCount; //this is the number of diff planes (Nchoose2)
-    //----Done filling dims2plane
+	//DEBUG: check if Plaquette has any errors
+	//vector<int> Check(Plaquette.size(),0);
+	vector<int> Check(N1,0);
+	//cout<<"Check size : "<<Check.size()<<endl;
+	for (int j=0; j<Plaquette.size(); j++)
+		for (int k=0; k<Plaquette[j].size(); k++)
+			Check[Plaquette[j][k]]++;
 
-    //Now creating Cubes
-    //Input: cube identifier #
-    //Output: the 6 2-cells associated with that cube
-    temp.assign(6,0);
-    for (int v=0; v<N0; v++ ){ //loop over 0-cells
+	for (int j=0; j<Check.size(); j++){
+		if (Check[j] != 2*(D_-1)){ 
+			cout<<"Plaquette error \n";
+			cout<<j<<" "<<Check[j]<<endl;
+		}   
+	}
 
-        for (int i=0; i<D_; i++){ //loop that defines all 2-cells per vertex
-            for (int j=0; j<D_; j++){
-                for (int k=0; k<D_; k++){
+	//Now, make the data structure used to relate the DOF to the 4 plaquettes
+	All_Neighbors.resize(N1);
+	for (int i=0; i<Plaquette.size(); i++)
+		for (int j=0; j<Plaquette[i].size(); j++)
+			All_Neighbors[Plaquette[i][j]].push_back(i);
 
-                    if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
 
-                        temp[0] = Nplane*v + dims2plane[i][j];
-                        temp[1] = Nplane*v + dims2plane[i][k];
-                        temp[2] = Nplane*v + dims2plane[j][k];
-                        temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
-                        temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
-                        temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
-                        Cubes.push_back(temp);
-
-                    }//if
-                }//k
-            }//j
-        }//i
-    }//v
-
-    N3 = Cubes.size();//Number of 3-cells
-    cout << "N3=" << N3 <<endl;
-
-    occupancy.resize(boost::extents[N2]); //calculate percolation objects
-
-    //DEBUG: check if Plaquette has any errors
-    //vector<int> Check(Plaquette.size(),0);
-    vector<int> Check(N1,0);
-    //cout<<"Check size : "<<Check.size()<<endl;
-    for (int j=0; j<Plaquette.size(); j++)
-        for (int k=0; k<Plaquette[j].size(); k++)
-            Check[Plaquette[j][k]]++;
-
-    for (int j=0; j<Check.size(); j++){
-        if (Check[j] != 2*(D_-1)){ 
-            cout<<"Plaquette error \n";
-            cout<<j<<" "<<Check[j]<<endl;
-        }   
-    }
-    Energy = CalcEnergy(sigma);      
-    cout<<"Energy: "<<Energy<<endl;      
-
-    CalculateOccupancy(sigma); //for percolation
-
-    //Now, make the data structure used to relate the DOF to the 4 plaquettes
-    All_Neighbors.resize(N1);
-    for (int i=0; i<Plaquette.size(); i++)
-        for (int j=0; j<Plaquette[i].size(); j++)
-            All_Neighbors[Plaquette[i][j]].push_back(i);
-
-    //Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
-
-    //cube1.resize(boost::extents[N0][6]); 
-    //for (int v=0; v<N0; v++){
-    //    cube1[v][0] = 3*v;
-    //    cube1[v][1] = 3*v+1;
-    //    cube1[v][2] = 3*v+2;
-    //    cube1[v][3] = 3*cube.Neighbors[v][0]+2;
-    //    cube1[v][4] = 3*cube.Neighbors[v][1]+1;
-    //    cube1[v][5] = 3*cube.Neighbors[v][2]+0;
-    //}//v
-
-    if (D_ < 3) cout<<"ERROR: DIMENSION TOO LOW FOR PERCOLATION \n";
-
-    TwoCellNeighbors.resize(boost::extents[N2][10*(D_-2)]); 
-    //initialize
-    for (int i=0; i<TwoCellNeighbors.size(); i++)
-        for (int j=0; j<TwoCellNeighbors[i].size(); j++)
-            TwoCellNeighbors[i][j] = -99;
-
-    int p1, p2;
-    for (int v3=0; v3<Cubes.size(); v3++){
-
-        for (int i=0; i<Cubes[v3].size(); i++){
-            p1 = Cubes[v3][i];
-            for (int j=0; j<Cubes[v3].size(); j++){
-                p2 = Cubes[v3][j];
-                if (p1 != p2){
-
-                    for (int k=0; k<TwoCellNeighbors[p1].size(); k++) //no push_back
-                        if (TwoCellNeighbors[p1][k] == -99){
-                            TwoCellNeighbors[p1][k] = p2;
-                            break;
-                        }
-
-                }//if
-            }//j
-        }//i
-
-    }//v3
-
-//----------
-//        TwoCellNeighbors.resize(boost::extents[N2][10]); 
-//
-//        int plaq, count;
-//        int neg_dir;
-//        int n_v; //negative neighbor of v
-//        for (int v=0; v<N0; v++){
-//            for (int d=0; d<3; d++){ //D choose 2
-//                plaq = 3*v+d;
-//
-//                count = 0; //positive neighbors
-//                for (int j=0; j<6; j++){ 
-//                    if (cube1[v][j] != plaq){ 
-//                        TwoCellNeighbors[plaq][count] = cube1[v][j];
-//                        count++;
-//                    }//if
-//                    else{ //determine the negative direction
-//                        if (j==0) neg_dir = 2;
-//                        else if (j==2) neg_dir =0;
-//                        else neg_dir = j;
-//                    }
-//                }//j
-//
-//                count = 5; //negativeneighbors
-//                n_v = cube.Negatives[v][neg_dir]; //TODO: this is especially 3D
-//                //plaq = 3*n_v+d;
-//                for (int j=0; j<6; j++){ 
-//                    if (cube1[n_v][j] != plaq){ 
-//                        TwoCellNeighbors[plaq][count] = cube1[n_v][j];
-//                        count++;
-//                    }//if
-//                }//j
-//
-//            }//d
-//        }//v
+	Energy = CalcEnergy(sigma);      
+	cout<<"Energy: "<<Energy<<endl;      
 
 
 }//constructor
+
+
+//Prepare data structures for percolation: valid in D>2 only
+void GeneralD12Code::PreparePercolation(const Spins & sigma, const HyperCube & cube){
+
+	if (D_ < 3) cout<<"ERROR: DIMENSION TOO LOW FOR PERCOLATION \n";
+
+	//ANN's OTHER IDEA (JUST SO YOU KNOW)
+	//Create an object that translates between 2 dimensions
+	//and the plane they represent
+	dims2plane.resize(boost::extents[D_][D_]);
+	int tempCount=0;
+	for(int i=0; i<D_; i++){
+		for(int j=0; j<D_; j++){
+			if(i<j){ 
+				dims2plane[i][j]=tempCount;
+				dims2plane[j][i]=tempCount;
+				tempCount++;
+			}
+			else{ dims2plane[i][j]=-99; }
+		}//j
+	}//i
+	Nplane = tempCount; //this is the number of diff planes (Nchoose2)
+	//----Done filling dims2plane
+
+	//Now creating Cubes
+	//Input: cube identifier #
+	//Output: the 6 2-cells associated with that cube
+    vector <int> temp;
+    temp.assign(6,0);
+	for (int v=0; v<N0; v++ ){ //loop over 0-cells
+
+		for (int i=0; i<D_; i++){ //loop that defines all 2-cells per vertex
+			for (int j=0; j<D_; j++){
+				for (int k=0; k<D_; k++){
+
+					if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
+
+						temp[0] = Nplane*v + dims2plane[i][j];
+						temp[1] = Nplane*v + dims2plane[i][k];
+						temp[2] = Nplane*v + dims2plane[j][k];
+						temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
+						temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
+						temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
+						Cubes.push_back(temp);
+
+					}//if
+				}//k
+			}//j
+		}//i
+	}//v
+
+	N3 = Cubes.size();//Number of 3-cells
+	cout << "N3=" << N3 <<endl;
+
+	occupancy.resize(boost::extents[N2]); //calculate percolation objects
+
+	CalculateOccupancy(sigma); //for percolation
+
+	//Below defines which 2-cells are neighbors: belong to the same 3-cell (for percolation)
+
+
+	TwoCellNeighbors.resize(boost::extents[N2][10*(D_-2)]); 
+	//initialize
+	for (int i=0; i<TwoCellNeighbors.size(); i++)
+		for (int j=0; j<TwoCellNeighbors[i].size(); j++)
+			TwoCellNeighbors[i][j] = -99;
+
+	int p1, p2;
+	for (int v3=0; v3<Cubes.size(); v3++){
+
+		for (int i=0; i<Cubes[v3].size(); i++){
+			p1 = Cubes[v3][i];
+			for (int j=0; j<Cubes[v3].size(); j++){
+				p2 = Cubes[v3][j];
+				if (p1 != p2){
+
+					for (int k=0; k<TwoCellNeighbors[p1].size(); k++) //no push_back
+						if (TwoCellNeighbors[p1][k] == -99){
+							TwoCellNeighbors[p1][k] = p2;
+							break;
+						}
+
+				}//if
+			}//j
+		}//i
+
+	}//v3
+
+}//PreparePercolation
 
 
 //print
@@ -319,7 +283,7 @@ double GeneralD12Code::CalcEnergy(Spins & sigma){
 }
 
 //loops through to calculate the occupancy for percolation
-void GeneralD12Code::CalculateOccupancy(Spins & sigma){
+void GeneralD12Code::CalculateOccupancy(const Spins & sigma){
 
     double eTemp = 0.0;
 

@@ -30,6 +30,7 @@ int main(){
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
+    hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 	//sigma.print();
     hamil.print();
 
@@ -60,7 +61,7 @@ int main(){
                 hamil.LocalUpdate(sigma,T,mrand);
                 hamil.CalculateOccupancy(sigma);
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-                perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Ising
+                perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma);
             }//i
             accum.output(T);
