@@ -57,7 +57,7 @@ int main(){
             perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand);
-                //hamil.CalculateOccupancy(sigma);
+                //hamil.CalculateOccupancy(sigma); //now calculated in the LocalUpdate
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma);

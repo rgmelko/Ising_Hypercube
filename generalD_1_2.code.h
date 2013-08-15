@@ -358,17 +358,14 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
             else{ // otherwise reject
                 sigma.flip(site);
                 Energy = Eold; //redundant
-				accept = false;
+                accept = false;
             }
         }//Metropolis
 
-		if (accept == true) { //update the occupancy list since the flip was accepted
-			for (int k=0; k<All_Neighbors[site].size(); k++){ //bit flip
-				if (occupancy[All_Neighbors[site][k]] == 0) 
-					occupancy[All_Neighbors[site][k]] = 1; 
-				else occupancy[All_Neighbors[site][k]] = 0; 
-			}
-		}//accept
+        if (accept == true) { //update the occupancy list since the flip was accepted
+            for (int k=0; k<All_Neighbors[site].size(); k++) //bit flip
+                occupancy[All_Neighbors[site][k]] = 1 -occupancy[All_Neighbors[site][k]]; 
+        }//accept
 
     }//j
 
