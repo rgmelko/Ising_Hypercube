@@ -186,8 +186,9 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
     //    cube1[v][5] = 3*cube.Neighbors[v][2]+0;
     //}//v
 
+    if (D_ < 3) cout<<"ERROR: DIMENSION TOO LOW FOR PERCOLATION \n";
 
-    TwoCellNeighbors.resize(boost::extents[N2][10]); //TODO: 3D only 
+    TwoCellNeighbors.resize(boost::extents[N2][10*(D_-2)]); 
     //initialize
     for (int i=0; i<TwoCellNeighbors.size(); i++)
         for (int j=0; j<TwoCellNeighbors[i].size(); j++)
