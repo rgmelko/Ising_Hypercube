@@ -23,11 +23,14 @@ class GeneralD12Code
 {
 	private:
 		array_2t cube1;
+        array_2t dims2plane;
+        int Nplane;   //number of planes (Nchoose2)        
 
    public:
         int N0;
         int N1;   //number of DEGREES OF FREEDOM
         int N2;   //number of 2 cells
+        int N3;
         int D_;   //Dimension
         int L_;   //Linear size
 
@@ -43,6 +46,7 @@ class GeneralD12Code
 
         //The Face operators
         vector<vector<int> > Plaquette;
+        vector<vector<int> > Cubes;
         GeneralD12Code(Spins & sigma, HyperCube & cube); 
         double CalcEnergy(Spins & sigma);
         double CalcEnergyDiff(Spins & sigma, const int & flipsite);
@@ -71,6 +75,8 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
     temp.assign(4,0);  //assign 4 zeros to this vector
 
     //ANN's IDEA JUST SO YOU KNOW
+    //Input: plaquette#
+    //Output: the 4 1-cells associated with that plaquette
     for (int v=0; v<N0; v++ ){ //loop over 0-cells
 
         for (int i=0; i<(D_-1); i++){ //loop that defines all 2-cells per vertex
@@ -86,12 +92,60 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
                 }//if
 
-            }//i
-        }//j
+            }//j
+        }//i
 
     }//v
 
 	N2 = Plaquette.size(); //number of 2 cells
+
+    //ANN's OTHER IDEA (JUST SO YOU KNOW)
+    //Create an object that translates between 2 dimensions
+    //and the plane they represent
+    dims2plane.resize(boost::extents[D_][D_];
+    int tempCount=0;
+    for(int i=0; i<D_; i++){
+        for(int j=0; j<D_; j++){
+            if(i<j){ 
+                dims2plane[i][j]=tempCount;
+                dims2plane[j][i]=tempCount;
+                tempCount++;
+            }
+            else{ dims2plane[i][j]=-99; }
+        }//j
+    }//i
+    Nplane = tempCount; //this is the number of diff planes (Nchoose2)
+    //----Done filling dims2plane
+
+    //Now creating Cubes
+    //Input: cube identifier #
+    //Output: the 6 2-cells associated with that cube
+    temp.assign(6,0);
+    for (int v=0; v<N0; v++ ){ //loop over 0-cells
+
+        for (int i=0; i<D_; i++){ //loop that defines all 2-cells per vertex
+            for (int j=0; j<D_; j++){
+                for (int k=0; k<D_; k++){
+
+                if ((i<j)&&(j<k)){   cout<<i<<" "<<j<<" "<<k<<endl;
+
+                    temp[0] = Nplane*v + dims2plane[i][j];
+                    temp[1] = Nplane*v + dims2plane[i][k];
+                    temp[2] = Nplane*v + dims2plane[j][k];
+                    temp[3] = Nplane*cube.Neighbors[v][k] + dims2plane[i][j];
+                    temp[4] = Nplane*cube.Neighbors[v][j] + dims2plane[i][k];
+                    temp[5] = Nplane*cube.Neighbors[v][i] + dims2plane[j][k];
+                    Cubes.push_back(temp);
+
+                }//if
+
+            }//j
+        }//i
+
+    }//v
+
+    N3 = Cubes.size();//Number of 3-cells
+    cout << "N3=" << N3 <<endl;
 
 	occupancy.resize(boost::extents[N2]); //calculate percolation objects
 
