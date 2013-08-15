@@ -278,8 +278,8 @@ void GeneralD12Code::print(){
         cout<<endl;
     }
 
-    if (D_ == 3){ //TODO fix 3D
-        for (int i=0; i<N0; i++){
+//    if (D_ == 3){ //TODO fix 3D
+        for (int i=0; i<N3; i++){
             //PRINT_BLUE(i);
             for (int j=0; j<6; j++){
                 //cout<<cube1[i][j]<<" ";
@@ -292,14 +292,14 @@ void GeneralD12Code::print(){
 
         for (int i=0; i<N2; i++){
             //PRINT_RED(i);
-            for (int j=0; j<10; j++){
+            for (int j=0; j<10*(D_-2); j++){
                 cout<<TwoCellNeighbors[i][j]<<" ";
             }
             cout<<endl;
         }//i
 
 
-    }//3D TODO
+//    }//3D TODO
 
 }//print
 
