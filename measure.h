@@ -1,6 +1,9 @@
 #ifndef MEASURE_H
 #define MEASURE_H
 
+// measure.h: a class that performs statistical measurements of estimators
+// Energy, Specific Heat, Magnetization, Susceptibility
+
 #include "spins.h"
 
 class Measure

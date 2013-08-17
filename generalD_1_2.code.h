@@ -1,8 +1,8 @@
 #ifndef GENERALD_1_2_CODE_H
 #define GENERALD_1_2_CODE_H
 
-// fourD_1_2_code.h
-// a class to perform a simple metropolis MC on a 2D (1,2) toric code
+// a class to perform a metropolis MC update on a Ddim (1,D-1) toric code
+// calculates percolation of neighboring 2-cells
 
 #define PRINT_RED(x) std::cout << "\033[1;31m" << x << "\033[0m" << " "
 #define PRINT_BLUE(x) std::cout << "\033[1;34m" << x << "\033[0m" << " "

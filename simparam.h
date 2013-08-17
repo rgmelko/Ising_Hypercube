@@ -11,13 +11,13 @@ class PARAMS
     public:
         int nX_;      //linear size of lattice
         int Dim_;      //dimension of lattice
-        double Temp_;      //Temperature
-        double Tlow_;      //Temperature
-        double Tstep_;      //Temperature
-        int EQL_;     //the number of Monte Carlo steps
+        double Temp_;      //Temperature limit 1
+        double Tlow_;      //Temperature limit 2
+        double Tstep_;      //Temperature step
+        int EQL_;     //the number of equilibration steps
         int MCS_;     //the number of Monte Carlo steps
         int nBin_;    //number of production bins
-        long SEED_;
+        long SEED_;   //the random number seed
 
         PARAMS();
         void print();

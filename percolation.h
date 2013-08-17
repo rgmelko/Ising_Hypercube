@@ -1,6 +1,12 @@
 #ifndef PERCOLATION_H
 #define PERCOLATION_H
 
+// percolation.h: a class that performs percolation measurements given
+//   1) The arbitrary list of Neighbors or Nodes
+//   2) The "occupation" of the nodes, as 0 or 1
+//
+// Hoshen-Kopelman algorithm by Grant Watson, see https://github.com/MelkoCollective/extended_hk
+
 #include <boost/multi_array.hpp>
 
 #define PRINT_RED(x) std::cout << "\033[1;31m" << x << "\033[0m" << " "

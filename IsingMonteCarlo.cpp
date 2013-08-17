@@ -1,5 +1,9 @@
-// A program to simulate the Ising hamiltonian on a D-dimensional Hypercube
+// A program to simulate the Ising and (1,d-1) codes on a D-dimensional Hypercube
 // Roger Melko, June 8, 2013
+//
+// Requires BOOST multi_array: http://www.boost.org
+// compile example:  g++ -O3 IsingMonteCarlo.cpp -I /opt/local/include/  
+//
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -16,26 +20,24 @@ using namespace std;
 
 int main(){
 
-    PARAMS param; //read parameter file
-    //param.print();
+    //First, we call several constructors for the various objects used
 
-    MTRand mrand(param.SEED_); //random number for metropolis
+    PARAMS param; //read parameter file: L, D, T, etc.  See param.data
+
+    MTRand mrand(param.SEED_); //random number generator
 
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
-    //cube.print();
 
-    //define the Ising variables +1 or -1: initialize to 1
-    //Spins sigma(cube.N_);
-    Spins sigma; //Assign size of spins in Hamiltonian below
+    //define the Ising variables +1 or -1 
+    Spins sigma; //Assign number of spins in the Hamiltonian below
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
     hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
-    //sigma.print();
-    //hamil.print();
 
     //Percolation perc(hamil.N_); //Ising model
     Percolation perc(hamil.N2); //Toric code
+
     //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
     perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
     //perc.print();
@@ -43,7 +45,7 @@ int main(){
     //Measure accum(hamil.N_,param);     //Ising model
     Measure accum(hamil.N1,param);  //toric code
 
-    //insert T loop here
+    //This is the temperature loop
     for (double T = param.Temp_; T>param.Tlow_+param.Tstep_; T-=param.Tstep_){ //down
 
         //Equilibriation
