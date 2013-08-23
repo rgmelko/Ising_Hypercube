@@ -83,7 +83,7 @@ void Measure::output(const double & T){
     cfout<<Cv/(T*T*1.0*Nspin)<<" ";
     cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<" ";
 	double susc = TOT_Mag2/(1.0*MCS) - TOT_Mag*TOT_Mag/(1.0*MCS*MCS); 
-    cfout<<susc/(T*1.0*Nspin)<<"  ";
+    cfout<<susc/(T*1.0*Nspin)<<" ";
     cfout<<TOT_WilX/(1.0*MCS)<<"\n";
 
 	cfout.close();

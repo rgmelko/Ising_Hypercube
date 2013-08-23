@@ -33,26 +33,26 @@ int main(){
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
-//    hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
+
+    hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 
     //Percolation perc(hamil.N_); //Ising model
-//    Percolation perc(hamil.N2); //Toric code
+    //Percolation perc(hamil.N2); //Toric code
 
     //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-//    perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
+    //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
     //perc.print();
 
     //Measure accum(hamil.N_,param);     //Ising model
     Measure accum(hamil.N1,param);  //toric code
 
+    double T;
     //This is the temperature loop
-    for (double T = param.Temp_; T<param.Tlow_+param.Tstep_; T+=param.Tstep_){ //down
-
+    for (T = param.Temp_; T>param.Tlow_; T-=param.Tstep_){ //down
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
             hamil.LocalUpdate(sigma,T,mrand);
         }
-
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();

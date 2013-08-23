@@ -369,10 +369,12 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
             }
         }//Metropolis
 
-        if (accept == true) { //update the occupancy list since the flip was accepted
-            for (int k=0; k<All_Neighbors[site].size(); k++) //bit flip
-                occupancy[All_Neighbors[site][k]] = 1 -occupancy[All_Neighbors[site][k]]; 
-        }//accept
+//---------BELOW FOR PERCOLATION
+//        if (accept == true) { //update the occupancy list since the flip was accepted
+//            for (int k=0; k<All_Neighbors[site].size(); k++) //bit flip
+//                occupancy[All_Neighbors[site][k]] = 1 -occupancy[All_Neighbors[site][k]]; 
+//        }//accept
+//------------------------------
 
     }//j
 
