@@ -21,11 +21,14 @@ class Measure
       double TOT_Mag2;    //magnetization squared
       double TOT_WilX;    //magnetization squared
 
+      vector <double> Wilson_RunningAvg;
+
       Measure(const int &, const PARAMS &);
       void zero();
       void record(double & energy, Spins & sigma, const array_2t &);
       void output(const double &);
-  
+      void outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops, const int & MCstep);
+ 
 };
 
 //constructor
@@ -39,6 +42,8 @@ Measure::Measure(const int & N, const PARAMS & p){
     TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
     TOT_WilX= 0.0;
+
+	Wilson_RunningAvg.assign(p.Dim_,0.0);
 }
 
 //zero
@@ -48,7 +53,11 @@ void Measure::zero(){
     TOT_energy2 = 0.0;
     TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
-    TOT_WilX= 0.0;
+    TOT_WilX= 0.0;	
+
+	for (int d=0; d<Wilson_RunningAvg.size(); d++)
+		Wilson_RunningAvg[d] = 0.0;
+
 }
 
 
@@ -71,7 +80,6 @@ void Measure::record(double & energy, Spins & sigma, const array_2t & WilsonLoop
 
     TOT_WilX += 1.0*prod;
 
-
 }//update
 
 void Measure::output(const double & T){
@@ -91,6 +99,29 @@ void Measure::output(const double & T){
 	cfout.close();
 
 }//output
+
+void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops, const int & MCstep){
+
+    int prod;
+	int L = WilsonLoops[0].size();
+	int D = WilsonLoops.size();
+
+ 	ofstream cfout;
+	cfout.open("02.data",ios::app);
+   
+	for (int d=0; d<D; d++){
+		prod = 1;
+		for (int i=0; i<L; i++)
+			prod *= sigma.spin[WilsonLoops[d][i]];
+		//cfout<<prod<<" ";
+		Wilson_RunningAvg[d] += prod;
+       cfout<<Wilson_RunningAvg[d]/(1.0*MCstep)<<" ";
+	}
+	cfout<<endl;
+
+	cfout.close();
+
+}//outputWilsonLoop
 
 
 #endif

@@ -63,6 +63,8 @@ int main(){
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
+				accum.outputWilsonLoop(sigma,hamil.WilsonLoops,i+1);
+
             }//i
             accum.output(T);
             //perc.output(T,param.MCS_);
