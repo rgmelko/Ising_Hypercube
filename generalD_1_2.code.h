@@ -24,6 +24,7 @@ class GeneralD12Code
     private:
         array_2t dims2plane;
         int Nplane;   //number of planes (Nchoose2)        
+        int myPow(int, int);
 
     public:
         int N0;
@@ -45,7 +46,7 @@ class GeneralD12Code
         array_1t occupancy;
 
 		//A topological Wilson loop in the x-direction
-        vector <int> WilsonX;
+		array_2t WilsonLoops;
 
         //The Face operators
         vector<vector<int> > Plaquette;
@@ -72,7 +73,7 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
     N1 = D_*cube.N_; //number of 1 cells
 
     sigma.resize(N1); //these are the degrees of freedom (1 cells)
-    sigma.randomize();
+    //sigma.randomize();
 
     //use it to built the sigma-z plaquettes
     vector <int> temp;
@@ -124,10 +125,12 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
         for (int j=0; j<Plaquette[i].size(); j++)
             All_Neighbors[Plaquette[i][j]].push_back(i);
 
-    //A topologicall non-trivial Wilson loop in the X-direction
-    WilsonX.clear();
-    for (int x=0; x<L_; x++)
-       WilsonX.push_back(x*D_);
+    //A topologicall non-trivial Wilson loop in each direction
+	WilsonLoops.resize(boost::extents[D_][L_]); 
+
+	for (int d=0; d<D_; d++)
+		for (int x=0; x<L_; x++)
+			WilsonLoops[d][x] = d + x*myPow(D_,d+1);
 
     Energy = CalcEnergy(sigma);      
     cout<<"Energy: "<<Energy<<endl;      
@@ -382,6 +385,12 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
 }//LocalUpdate
 
 
+//a simple function to calculate powers of an integer: not for general use
+int GeneralD12Code::myPow (int x, int p) {
+  int i = 1;
+  for (int j = 1; j <= p; j++)  i *= x;
+  return i;
+}
 
 #endif
 

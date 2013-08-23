@@ -6,6 +6,8 @@
 
 #include "spins.h"
 
+typedef boost::multi_array<int, 2> array_2t;
+
 class Measure
 {
     private:
@@ -21,7 +23,7 @@ class Measure
 
       Measure(const int &, const PARAMS &);
       void zero();
-      void record(double & energy, Spins & sigma, const vector<int>);
+      void record(double & energy, Spins & sigma, const array_2t &);
       void output(const double &);
   
 };
@@ -50,7 +52,7 @@ void Measure::zero(){
 }
 
 
-void Measure::record(double & energy, Spins & sigma, const vector<int> WilsonX){
+void Measure::record(double & energy, Spins & sigma, const array_2t & WilsonLoops){
 
     TOT_energy += energy;
     TOT_energy2 += energy * energy;
@@ -63,9 +65,9 @@ void Measure::record(double & energy, Spins & sigma, const vector<int> WilsonX){
     TOT_Mag2 += 1.0*mag*mag;
 
     int prod = 1;
-	int L = WilsonX.size();
+	int L = WilsonLoops[0].size();
     for (int i=0; i<L; i++)
-		prod *= sigma.spin[WilsonX[i]];
+		prod *= sigma.spin[WilsonLoops[0][i]];
 
     TOT_WilX += 1.0*prod;
 

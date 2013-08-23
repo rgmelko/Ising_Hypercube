@@ -48,7 +48,7 @@ int main(){
 
     double T;
     //This is the temperature loop
-    for (T = param.Temp_; T>param.Tlow_; T-=param.Tstep_){ //down
+    for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //down
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
             hamil.LocalUpdate(sigma,T,mrand);
@@ -62,7 +62,7 @@ int main(){
                 //hamil.CalculateOccupancy(sigma); //now calculated in the LocalUpdate
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
-                accum.record(hamil.Energy,sigma,hamil.WilsonX);
+                accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
             }//i
             accum.output(T);
             //perc.output(T,param.MCS_);
