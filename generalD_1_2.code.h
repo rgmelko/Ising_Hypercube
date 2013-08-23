@@ -44,6 +44,9 @@ class GeneralD12Code
         //the occupancy - for percolation
         array_1t occupancy;
 
+		//A topological Wilson loop in the x-direction
+        vector <int> WilsonX;
+
         //The Face operators
         vector<vector<int> > Plaquette;
         vector<vector<int> > Cubes;
@@ -121,6 +124,10 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
         for (int j=0; j<Plaquette[i].size(); j++)
             All_Neighbors[Plaquette[i][j]].push_back(i);
 
+    //A topologicall non-trivial Wilson loop in the X-direction
+    WilsonX.clear();
+    for (int x=0; x<L_; x++)
+       WilsonX.push_back(x*D_);
 
     Energy = CalcEnergy(sigma);      
     cout<<"Energy: "<<Energy<<endl;      

@@ -33,20 +33,20 @@ int main(){
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
-    hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
+//    hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 
     //Percolation perc(hamil.N_); //Ising model
-    Percolation perc(hamil.N2); //Toric code
+//    Percolation perc(hamil.N2); //Toric code
 
     //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-    perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
+//    perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
     //perc.print();
 
     //Measure accum(hamil.N_,param);     //Ising model
     Measure accum(hamil.N1,param);  //toric code
 
     //This is the temperature loop
-    for (double T = param.Temp_; T>param.Tlow_+param.Tstep_; T-=param.Tstep_){ //down
+    for (double T = param.Temp_; T<param.Tlow_+param.Tstep_; T+=param.Tstep_){ //down
 
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
@@ -56,16 +56,16 @@ int main(){
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
-            perc.zero();
+            //perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand);
                 //hamil.CalculateOccupancy(sigma); //now calculated in the LocalUpdate
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-                perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
-                accum.record(hamil.Energy,sigma);
+                //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
+                accum.record(hamil.Energy,sigma,hamil.WilsonX);
             }//i
             accum.output(T);
-            perc.output(T,param.MCS_);
+            //perc.output(T,param.MCS_);
             //sigma.print();
         }//k
     }//T
