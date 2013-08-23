@@ -109,6 +109,7 @@ void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops
  	ofstream cfout;
 	cfout.open("02.data",ios::app);
    
+    cfout<<MCstep<<" ";
 	for (int d=0; d<D; d++){
 		prod = 1;
 		for (int i=0; i<L; i++)
