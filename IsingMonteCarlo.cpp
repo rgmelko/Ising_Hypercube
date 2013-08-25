@@ -18,7 +18,16 @@ using namespace std;
 #include "measure.h"
 #include "percolation.h"
 
-int main(){
+int main ( int argc, char *argv[] )
+{
+    int seed_add;
+    if ( argc != 2 ){ 
+        cout<<"usage: "<< argv[0] <<" integer \n";
+        return 1;
+    }
+    else {
+        seed_add = strtol(argv[1], NULL, 10);
+    }
 
     //First, we call several constructors for the various objects used
 
@@ -63,7 +72,7 @@ int main(){
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
-				accum.outputWilsonLoop(sigma,hamil.WilsonLoops,i+1);
+				accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
             accum.output(T);

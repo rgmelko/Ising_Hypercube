@@ -21,13 +21,13 @@ class Measure
       double TOT_Mag2;    //magnetization squared
       double TOT_WilX;    //magnetization squared
 
-      vector <double> Wilson_RunningAvg;
+      //vector <double> Wilson_RunningAvg;
 
       Measure(const int &, const PARAMS &);
       void zero();
       void record(double & energy, Spins & sigma, const array_2t &);
       void output(const double &);
-      void outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops, const int & MCstep);
+      void outputWilsonLoop(const Spins & , const array_2t & , const int & );
  
 };
 
@@ -43,7 +43,7 @@ Measure::Measure(const int & N, const PARAMS & p){
     TOT_Mag2 = 0.0;
     TOT_WilX= 0.0;
 
-	Wilson_RunningAvg.assign(p.Dim_,0.0);
+	//Wilson_RunningAvg.assign(p.Dim_,0.0);
 }
 
 //zero
@@ -55,8 +55,8 @@ void Measure::zero(){
     TOT_Mag2 = 0.0;
     TOT_WilX= 0.0;	
 
-	for (int d=0; d<Wilson_RunningAvg.size(); d++)
-		Wilson_RunningAvg[d] = 0.0;
+	//for (int d=0; d<Wilson_RunningAvg.size(); d++)
+    //Wilson_RunningAvg[d] = 0.0;
 
 }
 
@@ -100,23 +100,58 @@ void Measure::output(const double & T){
 
 }//output
 
-void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops, const int & MCstep){
+void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops, const int & SimNum){
 
-    int prod;
+    int SimTemp = SimNum;
+
+    char fname[8];
+
+    if (SimTemp/10 == 0)
+        fname[0]='0';
+    else if (SimTemp/20 == 0) {
+        fname[0]='1';
+        SimTemp = SimTemp - 10;   }
+    else if (SimTemp/30 == 0) {
+        fname[0]='2';
+        SimTemp = SimTemp - 20;   }
+    else if (SimTemp/40 == 0) {
+        fname[0]='3';
+        SimTemp = SimTemp - 30;   }
+
+    if (SimTemp == 0) fname[1] = '0';
+    else if (SimTemp%9 == 0) fname[1] = '9';
+    else if (SimTemp%8 == 0) fname[1] = '8';
+    else if (SimTemp%7 == 0) fname[1] = '7';
+    else if (SimTemp%6 == 0) fname[1] = '6';
+    else if (SimTemp%5 == 0) fname[1] = '5';
+    else if (SimTemp%4 == 0) fname[1] = '4';
+    else if (SimTemp%3 == 0) fname[1] = '3';
+    else if (SimTemp%2 == 0) fname[1] = '2';
+    else if (SimTemp%1 == 0) fname[1] = '1';
+
+    fname[2] = '.';
+    fname[3] = 'w';
+    fname[4] = 'n';
+    fname[5] = 'u';
+    fname[6] = 'm';
+    fname[7] = '\0';
+
+
 	int L = WilsonLoops[0].size();
 	int D = WilsonLoops.size();
 
  	ofstream cfout;
-	cfout.open("02.data",ios::app);
+	cfout.open(fname,ios::app);
    
-    cfout<<MCstep<<" ";
+    double prod;
 	for (int d=0; d<D; d++){
 		prod = 1;
 		for (int i=0; i<L; i++)
 			prod *= sigma.spin[WilsonLoops[d][i]];
 		//cfout<<prod<<" ";
-		Wilson_RunningAvg[d] += prod;
-       cfout<<Wilson_RunningAvg[d]/(1.0*MCstep)<<" ";
+		//Wilson_RunningAvg[d] += prod;
+       //cfout<<Wilson_RunningAvg[d]/(1.0*MCstep)<<" ";
+       cfout<<prod<<" ";
 	}
 	cfout<<endl;
 
