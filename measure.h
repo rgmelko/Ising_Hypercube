@@ -117,6 +117,24 @@ void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops
     else if (SimTemp/40 == 0) {
         fname[0]='3';
         SimTemp = SimTemp - 30;   }
+    else if (SimTemp/50 == 0) {
+        fname[0]='4';
+        SimTemp = SimTemp - 40;   }
+    else if (SimTemp/60 == 0) {
+        fname[0]='5';
+        SimTemp = SimTemp - 50;   }
+    else if (SimTemp/70 == 0) {
+        fname[0]='6';
+        SimTemp = SimTemp - 60;   }
+    else if (SimTemp/80 == 0) {
+        fname[0]='7';
+        SimTemp = SimTemp - 70;   }
+    else if (SimTemp/90 == 0) {
+        fname[0]='8';
+        SimTemp = SimTemp - 80;   }
+    else if (SimTemp/100 == 0) {
+        fname[0]='9';
+        SimTemp = SimTemp - 90;   }
 
     if (SimTemp == 0) fname[1] = '0';
     else if (SimTemp%9 == 0) fname[1] = '9';
