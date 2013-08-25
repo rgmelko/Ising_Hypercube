@@ -33,7 +33,7 @@ int main ( int argc, char *argv[] )
 
     PARAMS param; //read parameter file: L, D, T, etc.  See param.data
 
-    MTRand mrand(param.SEED_); //random number generator
+    MTRand mrand(param.SEED_+seed_add); //random number generator
 
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
 
