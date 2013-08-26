@@ -42,6 +42,8 @@ int main ( int argc, char *argv[] )
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube); //toric code
+	hamil.print();
+	return 1;
 
     hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 

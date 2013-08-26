@@ -130,7 +130,7 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 
 	for (int d=0; d<D_; d++)
 		for (int x=0; x<L_; x++)
-			WilsonLoops[d][x] = d + x*myPow(D_,d+1);
+			WilsonLoops[d][x] = d + x*D_*myPow(L_,d);
 
     Energy = CalcEnergy(sigma);      
     cout<<"Energy: "<<Energy<<endl;      
@@ -269,6 +269,12 @@ void GeneralD12Code::print(){
 //        }
 //        cout<<endl;
 //    }//i
+
+	for (int d=0; d<D_; d++){
+		for (int x=0; x<L_; x++)
+			cout<<WilsonLoops[d][x]<<" ";
+		cout<<endl;
+	}
 
 
 }//print
