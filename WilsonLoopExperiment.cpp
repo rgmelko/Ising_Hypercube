@@ -50,9 +50,9 @@ int main ( int argc, char *argv[] )
     double T;
     for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //up
         //Equilibriation
-        for (int i=0; i<param.EQL_; i++) {
-            hamil.LocalUpdate(sigma,T,mrand);
-        }
+        //for (int i=0; i<param.EQL_; i++) {
+        //    hamil.LocalUpdate(sigma,T,mrand);
+        //}
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
@@ -68,16 +68,16 @@ int main ( int argc, char *argv[] )
 
     //Stationary...
     //Equilibriation
-    for (int i=0; i<param.EQL_; i++) {
-        hamil.LocalUpdate(sigma,T,mrand);
-    }
+    //for (int i=0; i<param.EQL_; i++) {
+    //    hamil.LocalUpdate(sigma,T,mrand);
+    //}
     //MCS binning
     for (int k=0; k<param.nBin_; k++){ 
         accum.zero();
         for (int i=0; i<param.MCS_; i++){ 
             hamil.LocalUpdate(sigma,T,mrand);
             accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
-            //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
+            accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
         }//i
         accum.output(T);
@@ -86,9 +86,9 @@ int main ( int argc, char *argv[] )
     //down
     for (T = param.Tlow_; T>param.Temp_; T-=param.Tstep_){ //up
         //Equilibriation
-        for (int i=0; i<param.EQL_; i++) {
-            hamil.LocalUpdate(sigma,T,mrand);
-        }
+        //for (int i=0; i<param.EQL_; i++) {
+        //    hamil.LocalUpdate(sigma,T,mrand);
+        //}
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
@@ -102,7 +102,7 @@ int main ( int argc, char *argv[] )
         }//k
     }//T up
 
-    accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
+    //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
     return 0;
 
