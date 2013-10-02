@@ -26,7 +26,7 @@ class Measure
       Measure(const int &, const PARAMS &);
       void zero();
       void record(double & energy, Spins & sigma, const array_2t &);
-      void output(const double &);
+      void output(const double &, const double &);
       void outputWilsonLoop(const Spins & , const array_2t & , const int & );
  
 };
@@ -82,12 +82,13 @@ void Measure::record(double & energy, Spins & sigma, const array_2t & WilsonLoop
 
 }//update
 
-void Measure::output(const double & T){
+void Measure::output(const double & T, const double & H){
 
 	ofstream cfout;
 	cfout.open("00.data",ios::app);
 
     cfout<<T<<" ";
+    cfout<<H<<" ";
     cfout<<TOT_energy/(1.0*MCS * Nspin)<<" ";
 	double Cv = TOT_energy2/(1.0*MCS) - TOT_energy*TOT_energy/(1.0*MCS*MCS); 
     cfout<<Cv/(T*T*1.0*Nspin)<<" ";

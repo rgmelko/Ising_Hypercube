@@ -51,13 +51,13 @@ class GeneralD12Code
         //The Face operators
         vector<vector<int> > Plaquette;
         vector<vector<int> > Cubes;
-        GeneralD12Code(Spins & sigma, HyperCube & cube); 
-        double CalcEnergy(Spins & sigma);
-        double CalcEnergyDiff(Spins & sigma, const int & flipsite);
+        GeneralD12Code(Spins & sigma, const HyperCube & cube, const double & H); 
+        double CalcEnergy(const Spins & sigma, const double & H);
+        double CalcEnergyDiff(Spins & sigma, const int & flipsite, const double & H);
         void CalculateOccupancy(const Spins & sigma);
         void PreparePercolation(const Spins & sigma, const HyperCube & cube);
 
-        void LocalUpdate(Spins & sigma, const double & T, MTRand & ran);
+        void LocalUpdate(Spins & sigma, const double & T, MTRand & ran, const double & H);
 
         void print();
 
@@ -65,7 +65,7 @@ class GeneralD12Code
 };
 
 //constructor
-GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
+GeneralD12Code::GeneralD12Code(Spins & sigma, const HyperCube & cube, const double & H){
 
     L_ = cube.L_;
     D_ = cube.D_;
@@ -132,7 +132,7 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, HyperCube & cube){
 		for (int x=0; x<L_; x++)
 			WilsonLoops[d][x] = d + x*D_*myPow(L_,d);
 
-    Energy = CalcEnergy(sigma);      
+    Energy = CalcEnergy(sigma,H);      
     cout<<"Energy: "<<Energy<<endl;      
 
 
@@ -281,7 +281,7 @@ void GeneralD12Code::print(){
 
 
 //loops through to calculate the energy
-double GeneralD12Code::CalcEnergy(Spins & sigma){
+double GeneralD12Code::CalcEnergy(const Spins & sigma, const double & H){
 
     double eTemp = 0.0;
 
@@ -290,9 +290,38 @@ double GeneralD12Code::CalcEnergy(Spins & sigma){
             *sigma.spin[Plaquette[i][2]]*sigma.spin[Plaquette[i][3]];
     }//i
 
+    for (int i=0; i<sigma.spin.size(); i++)
+		eTemp -= H*sigma.spin[i];
+
+
     return eTemp;
 
 }
+
+
+//the fast way to calculte the new energy
+double GeneralD12Code::CalcEnergyDiff(Spins & sigma, const int & flipsite, const double & H){
+
+    double DeltaE = 0.0;
+    double spinProd;
+
+    for (int j=0; j<All_Neighbors[flipsite].size(); j++){
+        spinProd = 1; 
+        for(int k=0; k<Plaquette[0].size(); k++) {
+            spinProd *= sigma.spin[ Plaquette[All_Neighbors[flipsite][j]][k] ];
+        }//k
+
+        DeltaE += -spinProd; //ferromagnetic
+    }//j
+
+	DeltaE -= H*sigma.spin[flipsite];
+
+    DeltaE *= 2.0; //double counting
+
+    return DeltaE;
+
+}
+
 
 //loops through to calculate the occupancy for percolation
 void GeneralD12Code::CalculateOccupancy(const Spins & sigma){
@@ -317,29 +346,8 @@ void GeneralD12Code::CalculateOccupancy(const Spins & sigma){
 }//CalculateOccupancy
 
 
-//the fast way to calculte the new energy
-double GeneralD12Code::CalcEnergyDiff(Spins & sigma, const int & flipsite){
-
-    double DeltaE = 0.0;
-    double spinProd;
-
-    for (int j=0; j<All_Neighbors[flipsite].size(); j++){
-        spinProd = 1; 
-        for(int k=0; k<Plaquette[0].size(); k++) {
-            spinProd *= sigma.spin[ Plaquette[All_Neighbors[flipsite][j]][k] ];
-        }//k
-
-        DeltaE += -spinProd; //ferromagnetic
-    }//j
-
-    DeltaE *= 2.0; //double counting
-
-    return DeltaE;
-
-}
-
 //Calculates a number of single-spin flips
-void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
+void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran, const double & H){
 
     int site;  //random site for update
     double Eold, Enew, Ediff;
@@ -353,9 +361,9 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran){
 
         sigma.flip(site);  //trial flip
         Eold = Energy;
-        //Enew = CalcEnergy(sigma); //slow way
+        //Enew = CalcEnergy(sigma,H); //slow way
         //Ediff = Enew - Eold;
-        Ediff = CalcEnergyDiff(sigma,site); //fast way
+        Ediff = CalcEnergyDiff(sigma,site,H); //fast way
         Enew = Eold + Ediff;
 
         //cout<<Energy<<" "<<Ediff<<endl;
