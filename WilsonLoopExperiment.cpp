@@ -22,13 +22,13 @@ int main ( int argc, char *argv[] )
 {
     //A different command line argument for each simulation
     int seed_add = 0;
-    //if ( argc != 2 ){ 
-    //    cout<<"usage: "<< argv[0] <<" integer \n";
-    //    return 1;
-    //}
-    //else {
-    //    seed_add = strtol(argv[1], NULL, 10);
-    //}
+    if ( argc != 2 ){ 
+        cout<<"usage: "<< argv[0] <<" integer \n";
+        return 1;
+    }
+    else {
+        seed_add = strtol(argv[1], NULL, 10);
+    }
 
     //First, we call several constructors for the various objects used
 
@@ -56,11 +56,11 @@ int main ( int argc, char *argv[] )
 
     double H = param.H_;
     double T = param.Temp_;
-    //for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //up
+    for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //up
         //Equilibriation
-        for (int i=0; i<param.EQL_; i++) {
-            hamil.LocalUpdate(sigma,T,mrand,H);
-        }
+        //for (int i=0; i<param.EQL_; i++) {
+        //    hamil.LocalUpdate(sigma,T,mrand,H);
+        //}
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
@@ -72,43 +72,43 @@ int main ( int argc, char *argv[] )
             }//i
             accum.output(T,H);
         }//k
-    //}//T up
+    }//T up
 
-//    //Stationary...
-//    //Equilibriation
-//    //for (int i=0; i<param.EQL_; i++) {
-//    //    hamil.LocalUpdate(sigma,T,mrand);
-//    //}
-//    //MCS binning
-//    for (int k=0; k<param.nBin_; k++){ 
-//        accum.zero();
-//        for (int i=0; i<param.MCS_; i++){ 
-//            hamil.LocalUpdate(sigma,T,mrand);
-//            accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
-//            accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
-//
-//        }//i
-//        accum.output(T);
-//    }//k
-//
-//    //down
-//    for (T = param.Tlow_; T>param.Temp_; T-=param.Tstep_){ //up
-//        //Equilibriation
-//        //for (int i=0; i<param.EQL_; i++) {
-//        //    hamil.LocalUpdate(sigma,T,mrand);
-//        //}
-//        //MCS binning
-//        for (int k=0; k<param.nBin_; k++){ 
-//            accum.zero();
-//            for (int i=0; i<param.MCS_; i++){ 
-//                hamil.LocalUpdate(sigma,T,mrand);
-//                accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
-//                //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
-//
-//            }//i
-//            accum.output(T);
-//        }//k
-//    }//T up
+    //Stationary...
+    //Equilibriation
+    //for (int i=0; i<param.EQL_; i++) {
+    //    hamil.LocalUpdate(sigma,T,mrand);
+    //}
+    //MCS binning
+    for (int k=0; k<param.nBin_; k++){ 
+        accum.zero();
+        for (int i=0; i<param.MCS_; i++){ 
+            hamil.LocalUpdate(sigma,T,mrand,H);
+            accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
+            accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
+
+        }//i
+        accum.output(T,H);
+    }//k
+
+    //down
+    for (T = param.Tlow_; T>param.Temp_; T-=param.Tstep_){ //up
+        //Equilibriation
+        //for (int i=0; i<param.EQL_; i++) {
+        //    hamil.LocalUpdate(sigma,T,mrand);
+        //}
+        //MCS binning
+        for (int k=0; k<param.nBin_; k++){ 
+            accum.zero();
+            for (int i=0; i<param.MCS_; i++){ 
+                hamil.LocalUpdate(sigma,T,mrand,H);
+                accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
+                //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
+
+            }//i
+            accum.output(T,H);
+        }//k
+    }//T up
 
     //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
