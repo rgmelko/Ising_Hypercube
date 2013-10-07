@@ -41,7 +41,7 @@ int main ( int argc, char *argv[] )
     Spins sigma; //Assign number of spins in the Hamiltonian below
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
-    GeneralD12Code hamil(sigma,cube); //toric code
+    GeneralD12Code hamil(sigma,cube,param.H_); //toric code
 
     hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 
@@ -55,19 +55,20 @@ int main ( int argc, char *argv[] )
     //Measure accum(hamil.N_,param);     //Ising model
     Measure accum(hamil.N1,param);  //toric code
 
+    double H = param.H_;
     double T;
     //This is the temperature loop
     for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //down
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
-            hamil.LocalUpdate(sigma,T,mrand);
+            hamil.LocalUpdate(sigma,T,mrand,H);
         }
         //MCS binning
         for (int k=0; k<param.nBin_; k++){ 
             accum.zero();
             //perc.zero();
             for (int i=0; i<param.MCS_; i++){ 
-                hamil.LocalUpdate(sigma,T,mrand);
+                hamil.LocalUpdate(sigma,T,mrand,H);
                 //hamil.CalculateOccupancy(sigma); //now calculated in the LocalUpdate
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
@@ -75,7 +76,7 @@ int main ( int argc, char *argv[] )
 				accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
-            accum.output(T);
+            accum.output(T,H);
             //perc.output(T,param.MCS_);
             //sigma.print();
         }//k
