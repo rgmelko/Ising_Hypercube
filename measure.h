@@ -92,6 +92,7 @@ void Measure::output(const double & T, const double & H){
     cfout<<TOT_energy/(1.0*MCS * Nspin)<<" ";
 	double Cv = TOT_energy2/(1.0*MCS) - TOT_energy*TOT_energy/(1.0*MCS*MCS); 
     cfout<<Cv/(T*T*1.0*Nspin)<<" ";
+    cfout<<TOT_Mag/(1.0*MCS * Nspin)<<" ";
     cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<" ";
 	double susc = TOT_Mag2/(1.0*MCS) - TOT_Mag*TOT_Mag/(1.0*MCS*MCS); 
     cfout<<susc/(T*1.0*Nspin)<<" ";
