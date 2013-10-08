@@ -22,17 +22,20 @@ int main ( int argc, char *argv[] )
 {
     //A different command line argument for each simulation
     int seed_add = 0;
-    if ( argc != 2 ){ 
-        cout<<"usage: "<< argv[0] <<" integer \n";
-        return 1;
-    }
-    else {
-        seed_add = strtol(argv[1], NULL, 10);
-    }
+//    if ( argc != 2 ){ 
+//        cout<<"usage: "<< argv[0] <<" integer \n";
+//        return 1;
+//    }
+//    else {
+//        seed_add = strtol(argv[1], NULL, 10);
+//    }
 
     //First, we call several constructors for the various objects used
 
     PARAMS param; //read parameter file: L, D, T, etc.  See param.data
+
+    double H = param.H_;
+    double T = param.Temp_;
 
     MTRand mrand(param.SEED_+seed_add); //random number generator
 
@@ -46,16 +49,13 @@ int main ( int argc, char *argv[] )
 	//sigma.flip(1);
 	//cout<<hamil.CalcEnergyDiff(sigma,1,param.H_)<<" ";
 	//cout<<hamil.CalcEnergy(sigma,param.H_)<<endl;
-	//sigma.flip(6);
-	//cout<<hamil.CalcEnergyDiff(sigma,1,param.H_)<<" ";
-	//cout<<hamil.CalcEnergy(sigma,param.H_)<<endl;
+    //sigma.print();
+    //hamil.GaugeUpdate(sigma,T,mrand,H);
 
     //hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 
     Measure accum(hamil.N1,param);  //toric code
 
-    double H = param.H_;
-    double T = param.Temp_;
     for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //up
         //Equilibriation
         //for (int i=0; i<param.EQL_; i++) {

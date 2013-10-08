@@ -61,6 +61,7 @@ class GeneralD12Code
         void PreparePercolation(const Spins & sigma, const HyperCube & cube);
 
         void LocalUpdate(Spins & sigma, const double & T, MTRand & ran, const double & H);
+        void GaugeUpdate(Spins & sigma, const double & T, MTRand & ran, const double & H);
 
         void print();
 
@@ -417,6 +418,56 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran, 
 
     //cout<<"Emod "<<Energy<<endl;
 }//LocalUpdate
+
+//Performs a gauge update
+void GeneralD12Code::GaugeUpdate(Spins & sigma, const double & T, MTRand & ran, const double & H){
+
+    int site;  //random ZERO CELL for update
+    double Eold, Enew, Ediff;
+    double m_rand; //metropolis random number
+
+    bool accept;
+    for (int j=0; j<N0/2; j++){ //peform N random single spin flips
+
+        site = ran.randInt(N0-1);
+
+        for (int i=0; i<OnesConnectedToZero[site].size(); i++)
+            sigma.flip(OnesConnectedToZero[site][i]);  //trial flip
+
+        if (H < 0.000001 && H > -0.0000001){
+
+            Eold = Energy;
+            //cout<<"Eold "<<Energy<<" ";
+            Enew = CalcEnergy(sigma,H); //slow way
+            //cout<<"Enew "<<Energy<<endl;
+            Ediff = Enew - Eold;
+            //Ediff = CalcEnergyDiff(sigma,site,H); //fast way
+            //Enew = Eold + Ediff;
+
+            //Metropolis algorithm
+            accept = true;
+            if (Ediff < 0){
+                Energy = Enew;
+            }
+            else{
+                m_rand = ran.rand();   // real number in [0,1]
+                //cout<<"exponential "<<exp(-Ediff/T)<<" "<<m_rand<<endl;
+                if ( exp(-Ediff/T) > m_rand){
+                    Energy = Enew;
+                }
+                else{ // otherwise reject
+                    for (int i=0; i<OnesConnectedToZero[site].size(); i++)
+                        sigma.flip(OnesConnectedToZero[site][i]);  //trial flip
+                    Energy = Eold; //redundant
+                    accept = false;
+                }
+            }//Metropolis
+
+        }//if H
+
+    }//j
+
+}//GuageUpdate
 
 
 //a simple function to calculate powers of an integer: not for general use
