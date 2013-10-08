@@ -434,7 +434,7 @@ void GeneralD12Code::GaugeUpdate(Spins & sigma, const double & T, MTRand & ran, 
         for (int i=0; i<OnesConnectedToZero[site].size(); i++)
             sigma.flip(OnesConnectedToZero[site][i]);  //trial flip
 
-        if (H < 0.000001 && H > -0.0000001){
+        if (H > 0.000001 || H < -0.0000001){ //if H is not zero
 
             Eold = Energy;
             //cout<<"Eold "<<Energy<<" ";
