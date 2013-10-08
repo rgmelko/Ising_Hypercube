@@ -36,12 +36,16 @@ int main ( int argc, char *argv[] )
     MTRand mrand(param.SEED_+seed_add); //random number generator
 
     HyperCube cube(param.nX_,param.Dim_); //initialize the lattice
+    cube.print();
 
     //define the Ising variables +1 or -1 
     Spins sigma; //Assign number of spins in the Hamiltonian below
 
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube,param.H_); //toric code
+    hamil.print();
+
+    return 0;
 
     hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
 

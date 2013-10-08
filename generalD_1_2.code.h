@@ -48,6 +48,9 @@ class GeneralD12Code
 		//A topological Wilson loop in the x-direction
 		array_2t WilsonLoops;
 
+		//The 1 cells connected to each 0 cell: for the gauge cluster flip
+		array_2t OnesConnectedToZero;
+
         //The Face operators
         vector<vector<int> > Plaquette;
         vector<vector<int> > Cubes;
@@ -127,10 +130,19 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, const HyperCube & cube, const doub
 
     //A topologicall non-trivial Wilson loop in each direction
 	WilsonLoops.resize(boost::extents[D_][L_]); 
-
 	for (int d=0; d<D_; d++)
 		for (int x=0; x<L_; x++)
 			WilsonLoops[d][x] = d + x*D_*myPow(L_,d);
+
+    //The one cells connected to each zero-cell.  Used for cluster updates
+	OnesConnectedToZero.resize(boost::extents[N0][2*D_]); 
+    int back_site;
+	for (int n=0; n<N0; n++)
+		for (int d=0; d<D_; d++){
+            OnesConnectedToZero[n][d] = D_*n + d;
+            back_site = cube.Negatives[n][d];
+            OnesConnectedToZero[n][d+D_] = D_*back_site + d;
+        }
 
     Energy = CalcEnergy(sigma,H);      
     cout<<"Energy: "<<Energy<<endl;      
@@ -269,12 +281,20 @@ void GeneralD12Code::print(){
 //        }
 //        cout<<endl;
 //    }//i
+//
+//	for (int d=0; d<D_; d++){
+//		for (int x=0; x<L_; x++)
+//			cout<<WilsonLoops[d][x]<<" ";
+//		cout<<endl;
+//	}
 
-	for (int d=0; d<D_; d++){
-		for (int x=0; x<L_; x++)
-			cout<<WilsonLoops[d][x]<<" ";
-		cout<<endl;
-	}
+    for (int i=0; i<OnesConnectedToZero.size(); i++){
+        PRINT_BLUE(i);
+        for (int j=0; j<OnesConnectedToZero[i].size(); j++){
+            cout<<OnesConnectedToZero[i][j]<<" ";
+        }
+        cout<<endl;
+    }
 
 
 }//print
