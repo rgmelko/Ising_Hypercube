@@ -13,6 +13,7 @@ class Measure
     private:
        int Nspin;
        int MCS;
+       void createName(char *name, const int &);
 
     public:
       double TOT_energy;   //energy
@@ -26,7 +27,7 @@ class Measure
       Measure(const int &, const PARAMS &);
       void zero();
       void record(double & energy, Spins & sigma, const array_2t &);
-      void output(const double &, const double &);
+      void output(const double &, const double &, const int &);
       void outputWilsonLoop(const Spins & , const array_2t & , const int & );
  
 };
@@ -82,10 +83,21 @@ void Measure::record(double & energy, Spins & sigma, const array_2t & WilsonLoop
 
 }//update
 
-void Measure::output(const double & T, const double & H){
+void Measure::output(const double & T, const double & H, const int & SimNum){
+
+    char fname[8];
+    createName(fname, SimNum); //create the first two characters of the file name
+    fname[2] = '.';
+    fname[3] = 'd';
+    fname[4] = 'a';
+    fname[5] = 't';
+    fname[6] = 'a';
+    fname[7] = '\0';
 
 	ofstream cfout;
-	cfout.open("00.data",ios::app);
+	cfout.open(fname,ios::app);
+
+	//cfout.open("00.data",ios::app);
 
     cfout<<T<<" ";
     cfout<<H<<" ";
@@ -104,9 +116,43 @@ void Measure::output(const double & T, const double & H){
 
 void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops, const int & SimNum){
 
-    int SimTemp = SimNum;
 
     char fname[8];
+    createName(fname, SimNum); //create the first two characters of the file name
+    fname[2] = '.';
+    fname[3] = 'w';
+    fname[4] = 'n';
+    fname[5] = 'u';
+    fname[6] = 'm';
+    fname[7] = '\0';
+
+ 	ofstream cfout;
+	cfout.open(fname,ios::app);
+
+	int L = WilsonLoops[0].size();
+	int D = WilsonLoops.size();
+   
+    double prod;
+	for (int d=0; d<D; d++){
+		prod = 1;
+		for (int i=0; i<L; i++)
+			prod *= sigma.spin[WilsonLoops[d][i]];
+		//cfout<<prod<<" ";
+		//Wilson_RunningAvg[d] += prod;
+       //cfout<<Wilson_RunningAvg[d]/(1.0*MCstep)<<" ";
+       cfout<<prod<<" ";
+	}
+	cfout<<endl;
+
+	cfout.close();
+
+}//outputWilsonLoop
+
+
+//a private function to create the first two characters of the integer file name
+void Measure::createName(char *fname, const int & num){
+
+    int SimTemp = num;
 
     if (SimTemp/10 == 0)
         fname[0]='0';
@@ -149,35 +195,6 @@ void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops
     else if (SimTemp%2 == 0) fname[1] = '2';
     else if (SimTemp%1 == 0) fname[1] = '1';
 
-    fname[2] = '.';
-    fname[3] = 'w';
-    fname[4] = 'n';
-    fname[5] = 'u';
-    fname[6] = 'm';
-    fname[7] = '\0';
-
-
-	int L = WilsonLoops[0].size();
-	int D = WilsonLoops.size();
-
- 	ofstream cfout;
-	cfout.open(fname,ios::app);
-   
-    double prod;
-	for (int d=0; d<D; d++){
-		prod = 1;
-		for (int i=0; i<L; i++)
-			prod *= sigma.spin[WilsonLoops[d][i]];
-		//cfout<<prod<<" ";
-		//Wilson_RunningAvg[d] += prod;
-       //cfout<<Wilson_RunningAvg[d]/(1.0*MCstep)<<" ";
-       cfout<<prod<<" ";
-	}
-	cfout<<endl;
-
-	cfout.close();
-
-}//outputWilsonLoop
-
+}//createName
 
 #endif

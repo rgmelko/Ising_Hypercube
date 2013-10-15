@@ -22,8 +22,9 @@ int main ( int argc, char *argv[] )
 {
     int seed_add;
     if ( argc != 2 ){ 
-        cout<<"usage: "<< argv[0] <<" integer \n";
-        return 1;
+        //cout<<"usage: "<< argv[0] <<" integer \n";
+        //return 1;
+        seed_add = 0;
     }
     else {
         seed_add = strtol(argv[1], NULL, 10);
@@ -78,7 +79,7 @@ int main ( int argc, char *argv[] )
 				accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
-            accum.output(T,H);
+            accum.output(T,H,seed_add);
             //perc.output(T,param.MCS_);
             //sigma.print();
         }//k
