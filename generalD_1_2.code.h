@@ -78,6 +78,7 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, const HyperCube & cube, const doub
 
     sigma.resize(N1); //these are the degrees of freedom (1 cells)
     //sigma.randomize();
+    //for (int i=0; i<L_; i++) sigma.flip(D_*i+1); //Wy = -1
 
     //use it to built the sigma-z plaquettes
     vector <int> temp;

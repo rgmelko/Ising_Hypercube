@@ -20,7 +20,8 @@ class Measure
       double TOT_energy2;  //energy^2
       double TOT_Mag;    //magnetization s
       double TOT_Mag2;    //magnetization squared
-      double TOT_WilX;    //magnetization squared
+      double TOT_WilX;    //Wilson loop in the x-direction
+      double TOT_WilY;    //Wilson loop in the k-direction
 
       //vector <double> Wilson_RunningAvg;
 
@@ -43,6 +44,7 @@ Measure::Measure(const int & N, const PARAMS & p){
     TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
     TOT_WilX= 0.0;
+    TOT_WilY= 0.0;
 
 	//Wilson_RunningAvg.assign(p.Dim_,0.0);
 }
@@ -55,6 +57,7 @@ void Measure::zero(){
     TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
     TOT_WilX= 0.0;	
+    TOT_WilY= 0.0;	
 
 	//for (int d=0; d<Wilson_RunningAvg.size(); d++)
     //Wilson_RunningAvg[d] = 0.0;
@@ -74,12 +77,17 @@ void Measure::record(double & energy, Spins & sigma, const array_2t & WilsonLoop
     TOT_Mag += 1.0*mag;
     TOT_Mag2 += 1.0*mag*mag;
 
-    int prod = 1;
+    int prodx = 1;
+    int prody = 1;
 	int L = WilsonLoops[0].size();
-    for (int i=0; i<L; i++)
-		prod *= sigma.spin[WilsonLoops[0][i]];
+    for (int i=0; i<L; i++){
+		prodx *= sigma.spin[WilsonLoops[0][i]];
+		prody *= sigma.spin[WilsonLoops[1][i]];
+    }
+        
 
-    TOT_WilX += 1.0*prod;
+    TOT_WilX += 1.0*prodx;
+    TOT_WilY += 1.0*prody;
 
 }//update
 
@@ -108,7 +116,8 @@ void Measure::output(const double & T, const double & H, const int & SimNum){
     cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<" ";
 	double susc = TOT_Mag2/(1.0*MCS) - TOT_Mag*TOT_Mag/(1.0*MCS*MCS); 
     cfout<<susc/(T*1.0*Nspin)<<" ";
-    cfout<<TOT_WilX/(1.0*MCS)<<"\n";
+    cfout<<TOT_WilX/(1.0*MCS)<<" ";
+    cfout<<TOT_WilY/(1.0*MCS)<<"\n";
 
 	cfout.close();
 
