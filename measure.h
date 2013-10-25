@@ -21,7 +21,8 @@ class Measure
       double TOT_Mag;    //magnetization s
       double TOT_Mag2;    //magnetization squared
       double TOT_WilX;    //Wilson loop in the x-direction
-      double TOT_WilY;    //Wilson loop in the k-direction
+      double TOT_WilY;    //Wilson loop in the y-direction
+      double TOT_WilZ;    //Wilson loop in the z-direction
 
       //vector <double> Wilson_RunningAvg;
 
@@ -45,8 +46,9 @@ Measure::Measure(const int & N, const PARAMS & p){
     TOT_Mag2 = 0.0;
     TOT_WilX= 0.0;
     TOT_WilY= 0.0;
+    TOT_WilZ= 0.0;
 
-	//Wilson_RunningAvg.assign(p.Dim_,0.0);
+    //Wilson_RunningAvg.assign(p.Dim_,0.0);
 }
 
 //zero
@@ -56,10 +58,11 @@ void Measure::zero(){
     TOT_energy2 = 0.0;
     TOT_Mag = 0.0;
     TOT_Mag2 = 0.0;
-    TOT_WilX= 0.0;	
-    TOT_WilY= 0.0;	
+    TOT_WilX= 0.0;  
+    TOT_WilY= 0.0;  
+    TOT_WilZ= 0.0;  
 
-	//for (int d=0; d<Wilson_RunningAvg.size(); d++)
+    //for (int d=0; d<Wilson_RunningAvg.size(); d++)
     //Wilson_RunningAvg[d] = 0.0;
 
 }
@@ -79,15 +82,20 @@ void Measure::record(double & energy, Spins & sigma, const array_2t & WilsonLoop
 
     int prodx = 1;
     int prody = 1;
-	int L = WilsonLoops[0].size();
+    int prodz = 1;
+    int L = WilsonLoops[0].size();
     for (int i=0; i<L; i++){
-		prodx *= sigma.spin[WilsonLoops[0][i]];
-		prody *= sigma.spin[WilsonLoops[1][i]];
+        prodx *= sigma.spin[WilsonLoops[0][i]];
+        prody *= sigma.spin[WilsonLoops[1][i]];
+        if (WilsonLoops.size() > 2)
+            prodz *= sigma.spin[WilsonLoops[2][i]];
+        else prodz = 0;
     }
         
 
     TOT_WilX += 1.0*prodx;
     TOT_WilY += 1.0*prody;
+    TOT_WilZ += 1.0*prodz;
 
 }//update
 
@@ -102,24 +110,25 @@ void Measure::output(const double & T, const double & H, const int & SimNum){
     fname[6] = 'a';
     fname[7] = '\0';
 
-	ofstream cfout;
-	cfout.open(fname,ios::app);
+    ofstream cfout;
+    cfout.open(fname,ios::app);
 
-	//cfout.open("00.data",ios::app);
+    //cfout.open("00.data",ios::app);
 
     cfout<<T<<" ";
     cfout<<H<<" ";
     cfout<<TOT_energy/(1.0*MCS * Nspin)<<" ";
-	double Cv = TOT_energy2/(1.0*MCS) - TOT_energy*TOT_energy/(1.0*MCS*MCS); 
+    double Cv = TOT_energy2/(1.0*MCS) - TOT_energy*TOT_energy/(1.0*MCS*MCS); 
     cfout<<Cv/(T*T*1.0*Nspin)<<" ";
     cfout<<TOT_Mag/(1.0*MCS * Nspin)<<" ";
     cfout<<TOT_Mag2/(1.0*MCS * Nspin*Nspin)<<" ";
-	double susc = TOT_Mag2/(1.0*MCS) - TOT_Mag*TOT_Mag/(1.0*MCS*MCS); 
+    double susc = TOT_Mag2/(1.0*MCS) - TOT_Mag*TOT_Mag/(1.0*MCS*MCS); 
     cfout<<susc/(T*1.0*Nspin)<<" ";
     cfout<<TOT_WilX/(1.0*MCS)<<" ";
-    cfout<<TOT_WilY/(1.0*MCS)<<"\n";
+    cfout<<TOT_WilY/(1.0*MCS)<<" ";
+    cfout<<TOT_WilZ/(1.0*MCS)<<"\n";
 
-	cfout.close();
+    cfout.close();
 
 }//output
 
@@ -135,25 +144,25 @@ void Measure::outputWilsonLoop(const Spins & sigma, const array_2t & WilsonLoops
     fname[6] = 'm';
     fname[7] = '\0';
 
- 	ofstream cfout;
-	cfout.open(fname,ios::app);
+    ofstream cfout;
+    cfout.open(fname,ios::app);
 
-	int L = WilsonLoops[0].size();
-	int D = WilsonLoops.size();
+    int L = WilsonLoops[0].size();
+    int D = WilsonLoops.size();
    
     double prod;
-	for (int d=0; d<D; d++){
-		prod = 1;
-		for (int i=0; i<L; i++)
-			prod *= sigma.spin[WilsonLoops[d][i]];
-		//cfout<<prod<<" ";
-		//Wilson_RunningAvg[d] += prod;
+    for (int d=0; d<D; d++){
+        prod = 1;
+        for (int i=0; i<L; i++)
+            prod *= sigma.spin[WilsonLoops[d][i]];
+        //cfout<<prod<<" ";
+        //Wilson_RunningAvg[d] += prod;
        //cfout<<Wilson_RunningAvg[d]/(1.0*MCstep)<<" ";
        cfout<<prod<<" ";
-	}
-	cfout<<endl;
+    }
+    cfout<<endl;
 
-	cfout.close();
+    cfout.close();
 
 }//outputWilsonLoop
 
