@@ -66,11 +66,12 @@ int main ( int argc, char *argv[] )
             accum.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand,H);
+                hamil.GaugeUpdate(sigma,T,mrand,H);
                 accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
                 //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
-            accum.output(T,H);
+            accum.output(T,H,seed_add);
         }//k
     }//T up
 
@@ -84,11 +85,12 @@ int main ( int argc, char *argv[] )
         accum.zero();
         for (int i=0; i<param.MCS_; i++){ 
             hamil.LocalUpdate(sigma,T,mrand,H);
+            hamil.GaugeUpdate(sigma,T,mrand,H);
             accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
             accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
         }//i
-        accum.output(T,H);
+        accum.output(T,H,seed_add);
     }//k
 
     //down
@@ -102,11 +104,12 @@ int main ( int argc, char *argv[] )
             accum.zero();
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand,H);
+                hamil.GaugeUpdate(sigma,T,mrand,H);
                 accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
                 //accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
-            accum.output(T,H);
+            accum.output(T,H,seed_add);
         }//k
     }//T up
 
