@@ -150,7 +150,7 @@ GeneralD12Code::GeneralD12Code(Spins & sigma, const HyperCube & cube, const doub
         }
 
     Energy = CalcEnergy(sigma,H);      
-    cout<<"Energy: "<<Energy<<endl;      
+    //cout<<"Energy: "<<Energy<<endl;      
 
 
 }//constructor

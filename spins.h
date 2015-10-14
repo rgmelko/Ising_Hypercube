@@ -81,7 +81,7 @@ void Spins::flip(int index){
 void Spins::print(){
 
     for (int i=0;i<spin.size();i++){
-        cout<<spin[i]<<" ";
+        cout<<(spin[i]+1)/2<<" ";
     }//i
     cout<<endl;
 

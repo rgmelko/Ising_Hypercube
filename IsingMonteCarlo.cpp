@@ -57,9 +57,9 @@ int main ( int argc, char *argv[] )
     Measure accum(hamil.N1,param);  //toric code
 
     double H = param.H_;
-    double T;
+    double T = param.Temp_;
     //This is the temperature loop
-    for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //down
+    //for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //down
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
             hamil.LocalUpdate(sigma,T,mrand,H);
@@ -76,14 +76,14 @@ int main ( int argc, char *argv[] )
                 //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
                 //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
-				accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
+				//accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
             accum.output(T,H,seed_add);
             //perc.output(T,param.MCS_);
-            //sigma.print();
+            sigma.print();
         }//k
-    }//T
+    //}//T
 
     return 0;
 
