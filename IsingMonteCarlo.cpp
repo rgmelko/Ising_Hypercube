@@ -44,22 +44,13 @@ int main ( int argc, char *argv[] )
     //IsingHamiltonian hamil(sigma,cube); //Ising model
     GeneralD12Code hamil(sigma,cube,param.H_); //toric code
 
-    //hamil.PreparePercolation(sigma,cube); //for D>2 toric code percolation only
-
-    //Percolation perc(hamil.N_); //Ising model
-    //Percolation perc(hamil.N2); //Toric code
-
-    //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-    //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy);  //Toric code
-    //perc.print();
-
     //Measure accum(hamil.N_,param);     //Ising model
     Measure accum(hamil.N1,param);  //toric code
 
     double H = param.H_;
     double T = param.Temp_;
     //This is the temperature loop
-    //for (T = param.Temp_; T<param.Tlow_; T+=param.Tstep_){ //down
+    for (T = param.Temp_; T>param.Tlow_; T+=param.Tstep_){ //down
         //Equilibriation
         for (int i=0; i<param.EQL_; i++) {
             hamil.LocalUpdate(sigma,T,mrand,H);
@@ -72,18 +63,14 @@ int main ( int argc, char *argv[] )
             for (int i=0; i<param.MCS_; i++){ 
                 hamil.LocalUpdate(sigma,T,mrand,H);
                 hamil.GaugeUpdate(sigma,T,mrand,H);
-                //hamil.CalculateOccupancy(sigma); //now calculated in the LocalUpdate
-                //perc.DetermineClusters(hamil.All_Neighbors,hamil.occupancy); //Ising
-                //perc.DetermineClusters(hamil.TwoCellNeighbors,hamil.occupancy); //Toric code
                 accum.record(hamil.Energy,sigma,hamil.WilsonLoops);
 				//accum.outputWilsonLoop(sigma,hamil.WilsonLoops,seed_add);
 
             }//i
             accum.output(T,H,seed_add);
-            //perc.output(T,param.MCS_);
-            sigma.print();
+            //sigma.print();
         }//k
-    //}//T
+    }//T
 
     return 0;
 
