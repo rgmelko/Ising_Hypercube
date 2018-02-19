@@ -427,7 +427,7 @@ void GeneralD12Code::LocalUpdate(Spins & sigma, const double & T, MTRand & ran, 
 //Performs a gauge update
 void GeneralD12Code::GaugeUpdate(Spins & sigma, const double & T, MTRand & ran, const double & H){
 
-    int site;  //random ZERO CELL for update
+    int site,stari;  //random ZERO CELL for update
     double Eold, Enew, Ediff;
     double m_rand; //metropolis random number
 
@@ -436,18 +436,22 @@ void GeneralD12Code::GaugeUpdate(Spins & sigma, const double & T, MTRand & ran, 
 
         site = ran.randInt(N0-1);
 
-        for (int i=0; i<OnesConnectedToZero[site].size(); i++)
-            sigma.flip(OnesConnectedToZero[site][i]);  //trial flip
+        Ediff = 0;
+        for (int i=0; i<OnesConnectedToZero[site].size(); i++){
+            stari = OnesConnectedToZero[site][i];
+            sigma.flip(stari);  //trial flip
+            Ediff += CalcEnergyDiff(sigma,stari,H);
+        }
 
         if (H > 0.000001 || H < -0.0000001){ //if H is not zero
 
             Eold = Energy;
             //cout<<"Eold "<<Energy<<" ";
-            Enew = CalcEnergy(sigma,H); //slow way
+            //Enew = CalcEnergy(sigma,H); //slow way
+            //cout<<Enew - Eold<<" "<<Ediff<<endl;
             //cout<<"Enew "<<Energy<<endl;
-            Ediff = Enew - Eold;
-            //Ediff = CalcEnergyDiff(sigma,site,H); //fast way
-            //Enew = Eold + Ediff;
+            //Ediff = Enew - Eold;
+            Enew = Eold + Ediff;
 
             //Metropolis algorithm
             accept = true;
